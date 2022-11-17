@@ -98,9 +98,11 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length:
+      length: 3
       vars:
-         - []
+         - [track1_index, null]
+         - [track2_index, null]
+         - [pca_distance, null]
 
 labels:
    ### type can be `simple`, `custom`
