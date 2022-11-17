@@ -97,6 +97,10 @@ inputs:
       length: 5
       vars:
          - [sv_mask, null]
+   edge_features:
+      length:
+      vars:
+         - []
 
 labels:
    ### type can be `simple`, `custom`
