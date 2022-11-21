@@ -4,7 +4,7 @@ from utils.nn.model.ParticleNetEdge import ParticleNetEdgeTagger
 
 def get_model(data_config, **kwargs):
     conv_params = [
-        (16, (64, 64, 64)),
+        (16, (64, 64, 64)), # (k-nn, (convolution paramenters))
         (16, (128, 128, 128)),
         (16, (256, 256, 256)),
         ]

@@ -98,7 +98,7 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length: 3
+      length: 500 # max lenght of the variable for each jet (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]

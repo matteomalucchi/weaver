@@ -169,10 +169,12 @@ class EdgeFeatureConvBlock(nn.Module):
             self.sc_act = nn.ReLU()
 
     def forward(self, points, features, edge_features):
-        print('edge_features:\n', edge_features)
+        #print('edge_features block:\n', edge_features)
+        print("features block \n ", features.size() )
 
         topk_indices = knn(points, self.k)
         x = self.get_graph_feature(features, self.k, topk_indices)
+        print("x    \n", x.size() )
 
         for conv, bn, act in zip(self.convs, self.bns, self.acts):
             x = conv(x)  # (N, C', P, K)
@@ -253,9 +255,9 @@ class ParticleNetEdge(nn.Module):
         self.for_inference = for_inference
 
     def forward(self, points, features, edge_features, mask=None):
-        #print('points:\n', points)
-        #print('features:\n', features)
-        #print('edge_features:\n', edge_features)
+        print('points net:\n', points.size())
+        print('features net:\n', features.size())
+        print('edge_features net:\n', edge_features.size())
 
         if mask is None:
             mask = (features.abs().sum(dim=1, keepdim=True) != 0)  # (N, 1, P)
@@ -333,7 +335,7 @@ class ParticleNetEdgeTagger(nn.Module):
         super(ParticleNetEdgeTagger, self).__init__(**kwargs)
         self.pf_input_dropout = nn.Dropout(pf_input_dropout) if pf_input_dropout else None
         self.sv_input_dropout = nn.Dropout(sv_input_dropout) if sv_input_dropout else None
-        self.pf_conv = FeatureConv(pf_features_dims, 32)
+        self.pf_conv = FeatureConv(pf_features_dims, 32) # sets the dimension of the features of pv and pf to be equal
         self.sv_conv = FeatureConv(sv_features_dims, 32)
         self.pn = ParticleNetEdge(input_dims=32,
                               num_classes=num_classes,
@@ -345,6 +347,15 @@ class ParticleNetEdgeTagger(nn.Module):
                               for_inference=for_inference)
 
     def forward(self, pf_points, pf_features, pf_mask, sv_points, sv_features, sv_mask, edge_features):
+        print('\n\n\nedge_features tagger:\n', edge_features.size())
+
+        print('pf_points tagger:\n', pf_points.size())
+        print('sv_points tagger:\n', sv_points.size())
+        print('pf_features tagger:\n', pf_features.size())
+        print('sv_features tagger:\n', sv_features.size())
+        print('pf_mask tagger:\n', pf_mask.size())
+        print('sv_mask tagger:\n', sv_mask.size())
+
         if self.pf_input_dropout:
             pf_mask = (self.pf_input_dropout(pf_mask) != 0).float()
             pf_points *= pf_mask
@@ -357,4 +368,6 @@ class ParticleNetEdgeTagger(nn.Module):
         points = torch.cat((pf_points, sv_points), dim=2)
         features = torch.cat((self.pf_conv(pf_features * pf_mask) * pf_mask, self.sv_conv(sv_features * sv_mask) * sv_mask), dim=2)
         mask = torch.cat((pf_mask, sv_mask), dim=2)
+        print('features tagger:\n', features.size())
+
         return self.pn(points, features, edge_features, mask) # call the forward of particle net
