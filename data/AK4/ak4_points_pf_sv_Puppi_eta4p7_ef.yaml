@@ -98,11 +98,36 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length: 500 # max lenght of the variable for each jet (eg: max number of tracks combinations)
+      length: 500 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]
          - [pca_distance, null]
+         - [pca_significance, null]
+         - [pcaSeed_x1, null]
+         - [pcaSeed_y1, null]
+         - [pcaSeed_z1, null]
+         - [pcaSeed_x2, null]
+         - [pcaSeed_y2, null]
+         - [pcaSeed_z2, null]
+         - [pcaSeed_xerr1, null]
+         - [pcaSeed_yerr1, null]
+         - [pcaSeed_zerr1, null]
+         - [pcaSeed_xerr2, null]
+         - [pcaSeed_yerr2, null]
+         - [pcaSeed_zerr2, null]
+         - [dotprod1, null]
+         - [dotprod2, null]
+         - [pca_dist1, null]
+         - [pca_dist2, null]
+         - [dotprod12_2D, null]
+         - [dotprod12_2DV, null]
+         - [dotprod12_3D, null]
+         - [dotprod12_3DV, null]
+         - [pca_jetAxis_dist, null]
+         - [pca_jetAxis_dotprod, null]
+         - [pca_jetAxis_dEta, null]
+         - [pca_jetAxis_dPhi_, null]
 
 labels:
    ### type can be `simple`, `custom`
