@@ -47,6 +47,47 @@ def get_graph_feature_v2(x, k, idx):
     return fts
 
 
+def get_edges(x):
+    inner = -2 * torch.matmul(x.transpose(2, 1), x)
+    xx = torch.sum(x ** 2, dim=1, keepdim=True)
+    pairwise_distance = -xx - inner - xx.transpose(2, 1)
+    idx = pairwise_distance.topk(k=k + 1, dim=-1)[1][:, :, 1:]  # (batch_size, num_points, k)
+    return idx
+
+
+# v1 is faster on GPU
+def get_graph_edge_feature_v1(x, idx):
+    batch_size, num_dims, num_points = x.size()
+
+    idx_base = torch.arange(0, batch_size, device=x.device).view(-1, 1, 1) * num_points
+    idx = idx + idx_base
+    idx = idx.view(-1)
+
+    fts = x.transpose(2, 1).reshape(-1, num_dims)  # -> (batch_size, num_points, num_dims) -> (batch_size*num_points, num_dims)
+    fts = fts[idx, :].view(batch_size, num_points, k, num_dims)  # neighbors: -> (batch_size*num_points*k, num_dims) -> ...
+    fts = fts.permute(0, 3, 1, 2).contiguous()  # (batch_size, num_dims, num_points, k)
+    x = x.view(batch_size, num_dims, num_points, 1).repeat(1, 1, 1, k)
+    fts = torch.cat((x, fts - x), dim=1)  # ->(batch_size, 2*num_dims, num_points, k)
+    return fts
+
+
+# v2 is faster on CPU
+def get_graph_edge_feature_v2(x, idx):
+    batch_size, num_dims, num_points = x.size()
+
+    idx_base = torch.arange(0, batch_size, device=x.device).view(-1, 1, 1) * num_points
+    idx = idx + idx_base
+    idx = idx.view(-1)
+
+    fts = x.transpose(0, 1).reshape(num_dims, -1)  # -> (num_dims, batch_size, num_points) -> (num_dims, batch_size*num_points)
+    fts = fts[:, idx].view(num_dims, batch_size, num_points, k)  # neighbors: -> (num_dims, batch_size*num_points*k) -> ...
+    fts = fts.transpose(1, 0).contiguous()  # (batch_size, num_dims, num_points, k)
+
+    x = x.view(batch_size, num_dims, num_points, 1).repeat(1, 1, 1, k)
+    fts = torch.cat((x, fts - x), dim=1)  # ->(batch_size, 2*num_dims, num_points, k)
+
+    return fts
+
 class EdgeConvBlock(nn.Module):
     r"""EdgeConv layer.
     Introduced in "`Dynamic Graph CNN for Learning on Point Clouds
@@ -139,10 +180,11 @@ class EdgeFeatureConvBlock(nn.Module):
 
     def __init__(self, k, in_feat, out_feats, batch_norm=True, activation=True, cpu_mode=False):
         super(EdgeFeatureConvBlock, self).__init__()
-        self.k = k
         self.batch_norm = batch_norm
         self.activation = activation
         self.num_layers = len(out_feats)
+        self.k = k
+        #self.get_graph_edge_feature = get_graph_edge_feature_v2 if cpu_mode else get_graph_edge_feature_v1
         self.get_graph_feature = get_graph_feature_v2 if cpu_mode else get_graph_feature_v1
 
         self.convs = nn.ModuleList()
@@ -173,7 +215,10 @@ class EdgeFeatureConvBlock(nn.Module):
         print("features block \n ", features.size() )
 
         topk_indices = knn(points, self.k)
+        #top_indices = get_edges(edge_features)
+
         x = self.get_graph_feature(features, self.k, topk_indices)
+        #x = self.get_graph_edge_feature(features, top_indices)
         print("x    \n", x.size() )
 
         for conv, bn, act in zip(self.convs, self.bns, self.acts):
@@ -222,7 +267,7 @@ class ParticleNetEdge(nn.Module):
             in_feat = input_dims if idx == 0 else conv_params[idx - 1][1][-1]
             self.edge_convs.append(EdgeConvBlock(k=k, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference))
 
-        k, channels = conv_params[0]
+        _, channels = conv_params[0]
         in_feat = input_dims
         self.edge_feature_convs = EdgeFeatureConvBlock(k=k, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference)
 
