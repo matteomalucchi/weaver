@@ -98,7 +98,7 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length: 500 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      length: 5 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]

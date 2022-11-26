@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+torch.set_printoptions(profile="full")
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
 
 
@@ -47,12 +48,10 @@ def get_graph_feature_v2(x, k, idx):
     return fts
 
 
-def get_edges(x):
-    inner = -2 * torch.matmul(x.transpose(2, 1), x)
-    xx = torch.sum(x ** 2, dim=1, keepdim=True)
-    pairwise_distance = -xx - inner - xx.transpose(2, 1)
-    idx = pairwise_distance.topk(k=k + 1, dim=-1)[1][:, :, 1:]  # (batch_size, num_points, k)
-    return idx
+def get_edges(edge_features):
+    edges_idx = edge_features[:, :2, :]
+    return edges_idx
+
 
 
 # v1 is faster on GPU
@@ -211,15 +210,21 @@ class EdgeFeatureConvBlock(nn.Module):
             self.sc_act = nn.ReLU()
 
     def forward(self, points, features, edge_features):
+        #print('edge_features block:\n', edge_features.size())
         #print('edge_features block:\n', edge_features)
-        print("features block \n ", features.size() )
+        #print("features block \n ",features.size(),  "\n",features )
+        #print("features block \n ", )
 
         topk_indices = knn(points, self.k)
-        #top_indices = get_edges(edge_features)
+        edge_indices = get_edges(edge_features)
+        print("topk_indices block \n ", topk_indices.size() )
+        print("topk_indices block \n ", topk_indices)
+        #print("edge_indices block \n ", edge_indices.size() )
+        #print("edge_indices block \n ", edge_indices)
 
         x = self.get_graph_feature(features, self.k, topk_indices)
         #x = self.get_graph_edge_feature(features, top_indices)
-        print("x    \n", x.size() )
+        #print("x    \n", x.size(), "\n",x )
 
         for conv, bn, act in zip(self.convs, self.bns, self.acts):
             x = conv(x)  # (N, C', P, K)
@@ -300,9 +305,9 @@ class ParticleNetEdge(nn.Module):
         self.for_inference = for_inference
 
     def forward(self, points, features, edge_features, mask=None):
-        print('points net:\n', points.size())
-        print('features net:\n', features.size())
-        print('edge_features net:\n', edge_features.size())
+        #print('points net:\n', points.size())
+        #print('features net:\n', features.size())
+        #print('edge_features net:\n', edge_features.size())
 
         if mask is None:
             mask = (features.abs().sum(dim=1, keepdim=True) != 0)  # (N, 1, P)
@@ -392,14 +397,14 @@ class ParticleNetEdgeTagger(nn.Module):
                               for_inference=for_inference)
 
     def forward(self, pf_points, pf_features, pf_mask, sv_points, sv_features, sv_mask, edge_features):
-        print('\n\n\nedge_features tagger:\n', edge_features.size())
+        '''print('\n\n\nedge_features tagger:\n', edge_features.size())
 
         print('pf_points tagger:\n', pf_points.size())
         print('sv_points tagger:\n', sv_points.size())
         print('pf_features tagger:\n', pf_features.size())
         print('sv_features tagger:\n', sv_features.size())
         print('pf_mask tagger:\n', pf_mask.size())
-        print('sv_mask tagger:\n', sv_mask.size())
+        print('sv_mask tagger:\n', sv_mask.size())'''
 
         if self.pf_input_dropout:
             pf_mask = (self.pf_input_dropout(pf_mask) != 0).float()
@@ -413,6 +418,6 @@ class ParticleNetEdgeTagger(nn.Module):
         points = torch.cat((pf_points, sv_points), dim=2)
         features = torch.cat((self.pf_conv(pf_features * pf_mask) * pf_mask, self.sv_conv(sv_features * sv_mask) * sv_mask), dim=2)
         mask = torch.cat((pf_mask, sv_mask), dim=2)
-        print('features tagger:\n', features.size())
+        #print('features tagger:\n', features.size())
 
         return self.pn(points, features, edge_features, mask) # call the forward of particle net
