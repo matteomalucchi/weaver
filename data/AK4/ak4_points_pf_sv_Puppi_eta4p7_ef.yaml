@@ -16,6 +16,7 @@ new_variables:
    ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
    pfcand_mask: awkward.JaggedArray.ones_like(pfcand_etarel)
    sv_mask: awkward.JaggedArray.ones_like(sv_etarel)
+   edge_features_mask: awkward.JaggedArray.ones_like(pca_distance)
    label_b:     (jet_genjet_pt>0) & (jet_nBHadrons==1)
    label_bb:    (jet_genjet_pt>0) & (jet_nBHadrons>1)
    label_c:     (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)
@@ -98,7 +99,7 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length: 5 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      length: 625 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]
@@ -128,6 +129,10 @@ inputs:
          - [pca_jetAxis_dotprod, null]
          - [pca_jetAxis_dEta, null]
          - [pca_jetAxis_dPhi_, null]
+   edge_features_mask:
+      length: 625 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      vars:
+         - [edge_features_mask, null]
 
 labels:
    ### type can be `simple`, `custom`

@@ -2,7 +2,15 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+import sys
+
+orig_stdout = sys.stdout
+f = open('out.txt', 'w')
+sys.stdout = f
+
 torch.set_printoptions(profile="full")
+#torch.set_printoptions(edgeitems=5)
+
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
 
 
@@ -17,16 +25,29 @@ def knn(x, k):
 # v1 is faster on GPU
 def get_graph_feature_v1(x, k, idx):
     batch_size, num_dims, num_points = x.size()
+    #print("x get graph\n ", x.size(),  "\n"  , x)
 
-    idx_base = torch.arange(0, batch_size, device=x.device).view(-1, 1, 1) * num_points
-    idx = idx + idx_base
-    idx = idx.view(-1)
+    print("idx get graph\n ", idx.size(),  "\n"  , idx)  # (batch_size, num_points, k)
+    idx_base = torch.arange(0, batch_size, device=x.device).view(-1, 1, 1) * num_points # (batch_size, 1, 1)
+    #print("idx_base get graph\n ", idx_base.size(),  "\n"  , idx_base)
+    idx = idx + idx_base # for each batch increases the index of a quantity equal to num_points
+    #print("idx new get graph\n ", idx.size(),  "\n"  , idx)
+    idx = idx.view(-1) # (batch_size*num_points*k)
+    print("idx new new get graph\n ", idx.size(),  "\n"  , idx)
 
-    fts = x.transpose(2, 1).reshape(-1, num_dims)  # -> (batch_size, num_points, num_dims) -> (batch_size*num_points, num_dims)
+
+    fts = x.transpose(2, 1).reshape(-1, num_dims)  # (batch_size, num_dims, num_points)-> (batch_size, num_points, num_dims) -> (batch_size*num_points, num_dims)
+    print("fts  get graph\n ", fts.size(),  "\n"  , fts)
     fts = fts[idx, :].view(batch_size, num_points, k, num_dims)  # neighbors: -> (batch_size*num_points*k, num_dims) -> ...
+    print("fts new get graph\n ", fts.size(),  "\n"  , fts)
     fts = fts.permute(0, 3, 1, 2).contiguous()  # (batch_size, num_dims, num_points, k)
+    print("fts new new get graph\n ", fts.size(),  "\n"  , fts)
     x = x.view(batch_size, num_dims, num_points, 1).repeat(1, 1, 1, k)
+    #print("x new get graph\n ", x.size(),  "\n"  , x)
+
     fts = torch.cat((x, fts - x), dim=1)  # ->(batch_size, 2*num_dims, num_points, k)
+    print("fts last get graph\n ", fts.size(),  "\n"  , fts)
+
     return fts
 
 
@@ -49,8 +70,10 @@ def get_graph_feature_v2(x, k, idx):
 
 
 def get_edges(edge_features):
-    edges_idx = edge_features[:, :2, :]
-    return edges_idx
+    trk_idx = edge_features[:, :2, :] # track1_index and track1_index
+
+
+    return trk_idx
 
 
 
@@ -183,7 +206,7 @@ class EdgeFeatureConvBlock(nn.Module):
         self.activation = activation
         self.num_layers = len(out_feats)
         self.k = k
-        #self.get_graph_edge_feature = get_graph_edge_feature_v2 if cpu_mode else get_graph_edge_feature_v1
+        self.get_graph_edge_feature = get_graph_edge_feature_v2 if cpu_mode else get_graph_edge_feature_v1
         self.get_graph_feature = get_graph_feature_v2 if cpu_mode else get_graph_feature_v1
 
         self.convs = nn.ModuleList()
@@ -210,24 +233,21 @@ class EdgeFeatureConvBlock(nn.Module):
             self.sc_act = nn.ReLU()
 
     def forward(self, points, features, edge_features):
-        #print('edge_features block:\n', edge_features.size())
-        #print('edge_features block:\n', edge_features)
-        #print("features block \n ",features.size(),  "\n",features )
-        #print("features block \n ", )
+        print('edge_features block:\n', edge_features.size(), '\n', edge_features) #(batch_size, num_ef=28, dim_edgefeatures=625)
+        #print("features block \n ",features.size(),  "\n" )# size (batch_size, num_dims=32, num_points=55)
+        #print("points block \n ",points.size(),  "\n" ) # size (batch_size, 2, num_points)
 
         topk_indices = knn(points, self.k)
-        edge_indices = get_edges(edge_features)
-        print("topk_indices block \n ", topk_indices.size() )
-        print("topk_indices block \n ", topk_indices)
-        #print("edge_indices block \n ", edge_indices.size() )
-        #print("edge_indices block \n ", edge_indices)
-
+        edge_indices = get_edges(edge_features) #(batch_size, 2, dim_edgefeatures=625)
+        #print("topk_indices block \n ", topk_indices.size(), "\n" ) # size(batch_size, num_points, k)
+        #print("topk_indices block \n ", topk_indices)
+        print("edge_indices block \n ", edge_indices.size(),  "\n"  , edge_indices)
         x = self.get_graph_feature(features, self.k, topk_indices)
-        #x = self.get_graph_edge_feature(features, top_indices)
-        #print("x    \n", x.size(), "\n",x )
+        #x_ef = self.get_graph_edge_feature(edge_features, edge_indices)
+        #print("x    \n", x.size(), "\n" )
 
         for conv, bn, act in zip(self.convs, self.bns, self.acts):
-            x = conv(x)  # (N, C', P, K)
+            x = conv(x)  # (N, C', P, K) = (batch_size, num_dims, num_points, k-nn)
             if bn:
                 x = bn(x)
             if act:
@@ -270,7 +290,7 @@ class ParticleNetEdge(nn.Module):
         for idx, layer_param in enumerate(conv_params):
             k, channels = layer_param
             in_feat = input_dims if idx == 0 else conv_params[idx - 1][1][-1]
-            self.edge_convs.append(EdgeConvBlock(k=k, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference))
+            self.edge_convs.append(EdgeFeatureConvBlock(k=k, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference))
 
         _, channels = conv_params[0]
         in_feat = input_dims
@@ -311,7 +331,10 @@ class ParticleNetEdge(nn.Module):
 
         if mask is None:
             mask = (features.abs().sum(dim=1, keepdim=True) != 0)  # (N, 1, P)
+        #print ('mask \n', mask)
         points *= mask
+        #print('points net:\n', points)
+
         features *= mask
         coord_shift = (mask == 0) * 1e9 # if masked add 1e9 to coordinates and are not considered in the clustering to knn
         if self.use_counts:
@@ -325,9 +348,10 @@ class ParticleNetEdge(nn.Module):
         outputs = []
         for idx, conv in enumerate(self.edge_convs):
             pts = (points if idx == 0 else fts) + coord_shift
-            if idx == 0:
-                fts_ef = self.edge_feature_convs(pts, fts, edge_features)
-            fts = conv(pts, fts) * mask
+            #print('points net:\n', pts)
+
+            #fts_ef = self.edge_feature_convs(pts, fts, edge_features)
+            fts = conv(pts, fts, edge_features) * mask
             if self.use_fusion:
                 outputs.append(fts)
         if self.use_fusion:
@@ -346,7 +370,7 @@ class ParticleNetEdge(nn.Module):
         output = self.fc(x)
         if self.for_inference:
             output = torch.softmax(output, dim=1)
-        # print('output:\n', output)
+        #print('output:\n', output)
         return output
 
 
@@ -396,15 +420,16 @@ class ParticleNetEdgeTagger(nn.Module):
                               use_counts=use_counts,
                               for_inference=for_inference)
 
-    def forward(self, pf_points, pf_features, pf_mask, sv_points, sv_features, sv_mask, edge_features):
+    def forward(self, pf_points, pf_features, pf_mask, sv_points, sv_features, sv_mask, edge_features, edge_features_mask):
         '''print('\n\n\nedge_features tagger:\n', edge_features.size())
 
         print('pf_points tagger:\n', pf_points.size())
         print('sv_points tagger:\n', sv_points.size())
         print('pf_features tagger:\n', pf_features.size())
-        print('sv_features tagger:\n', sv_features.size())
-        print('pf_mask tagger:\n', pf_mask.size())
-        print('sv_mask tagger:\n', sv_mask.size())'''
+        print('sv_features tagger:\n', sv_features.size())'''
+        print('pf_mask tagger:\n', pf_mask.size(), '\n', pf_mask)
+        print('sv_mask tagger:\n', sv_mask.size(), '\n', sv_mask)
+        print('edge_features_mask tagger:\n', edge_features_mask.size(), '\n', edge_features_mask)
 
         if self.pf_input_dropout:
             pf_mask = (self.pf_input_dropout(pf_mask) != 0).float()
@@ -416,8 +441,11 @@ class ParticleNetEdgeTagger(nn.Module):
             sv_features *= sv_mask
 
         points = torch.cat((pf_points, sv_points), dim=2)
+        #print("points tagger \n ",points.size(),  "\n" , points) # size (batch_size, 2, num_points)
+
         features = torch.cat((self.pf_conv(pf_features * pf_mask) * pf_mask, self.sv_conv(sv_features * sv_mask) * sv_mask), dim=2)
         mask = torch.cat((pf_mask, sv_mask), dim=2)
+        edge_features= edge_features* edge_features_mask
         #print('features tagger:\n', features.size())
 
         return self.pn(points, features, edge_features, mask) # call the forward of particle net
