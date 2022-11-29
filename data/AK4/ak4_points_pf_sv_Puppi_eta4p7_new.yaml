@@ -8,8 +8,9 @@ selection:
    & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<61)) )
 
 test_time_selection:
-   # (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
-   (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+   # (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
+   # (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+   (np.abs(jet_eta)<4.7) & (jet_corr_pt>10) & (jet_corr_pt<1000)
 
 new_variables:
    ### [format] name: formula
