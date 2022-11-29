@@ -1,32 +1,31 @@
 selection:
-    ### use `&`, `|`, `~` for logical operations on numpy arrays
-    ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
-    >-
-    (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0)
-    & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) )
-    & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<186)) )
-    & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<61)) )
+   ### use `&`, `|`, `~` for logical operations on numpy arrays
+   ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+   >-
+   (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0)
+   & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) )
+   & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<186)) )
+   & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<61)) )
 
- test_time_selection:
-    # (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
-    (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+test_time_selection:
+   # (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
+   (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
 
- new_variables:
-    ### [format] name: formula
-    ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
-    pfcand_mask: awkward.JaggedArray.ones_like(pfcand_etarel)
-    sv_mask: awkward.JaggedArray.ones_like(sv_etarel)
-    edge_features_mask: awkward.JaggedArray.ones_like(pca_distance)
-    label_b:     (jet_genjet_pt>0) & (jet_nBHadrons==1)
-    label_bb:    (jet_genjet_pt>0) & (jet_nBHadrons>1)
-    label_c:     (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)
-    label_cc:    (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)
-    label_uds:   (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)
-    label_g:     (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)
-    label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)
-    label_pu:    (jet_genjet_pt<=0)
-    label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
-    label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
+new_variables:
+   ### [format] name: formula
+   ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+   pfcand_mask: awkward.JaggedArray.ones_like(pfcand_etarel)
+   sv_mask: awkward.JaggedArray.ones_like(sv_etarel)
+   label_b:     (jet_genjet_pt>0) & (jet_nBHadrons==1)
+   label_bb:    (jet_genjet_pt>0) & (jet_nBHadrons>1)
+   label_c:     (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)
+   label_cc:    (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)
+   label_uds:   (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)
+   label_g:     (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)
+   label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)
+   label_pu:    (jet_genjet_pt<=0)
+   label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
+   label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
 
 
 preprocess:
