@@ -8,7 +8,7 @@ import sys
 #f = open('out_new.txt', 'w')
 #sys.stdout = f
 
-#torch.set_printoptions(profile="full")
+torch.set_printoptions(profile="full")
 #np.set_printoptions(threshold=sys.maxsize)
 #torch.set_printoptions(edgeitems=5)
 
@@ -71,13 +71,13 @@ def get_graph_feature_v2(x, k, idx):
 
 
 def get_edges(edge_features, features, k1):
-    edge_list = edge_features[:, :2, :] # track1_index and track1_index
+    edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track1_index
     #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
 
     batch_size, num_dims, num_points = features.size()
 
 
-    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
+    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)#.type(torch.LongTensor)
     for batch in range(batch_size):
         j=0
         for i, pf in enumerate(edge_list[batch, 0]):
@@ -90,6 +90,24 @@ def get_edges(edge_features, features, k1):
             pf_idx = int(pf.item())
             idx_tensor[batch, pf_idx, j] = edge_list[batch, 1, i]
             j+=1
+
+
+    '''j=0
+    print(edge_list[:, 0, :])
+    for i, pf in enumerate(edge_list[:, 0, :]):
+        print(pf)
+        if i!=0 and pf_idx != pf:
+            if int(pf.item())==0:
+                j=0
+                break
+            j=0
+        if j>=k1:
+            j=0
+            continue
+        pf_idx=pf[:].type(torch.LongTensor)
+        #pf_idx = pf.int()
+        idx_tensor[:, pf_idx[:][i], j] = edge_list[:, 1, i]
+        j+=1'''
 
     #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
 

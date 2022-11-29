@@ -1,43 +1,32 @@
 selection:
-    ### use `&`, `|`, `~` for logical operations on numpy arrays
-    ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
-    >-
-    (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0)
-    & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) )
-    & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<186)) )
-    & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<61)) )
+   ### use `&`, `|`, `~` for logical operations on numpy arrays
+   ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+   >-
+   (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0)
+   & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) )
+   & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<186)) )
+   & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<61)) )
 
- test_time_selection:
-    # (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
-    # (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
-    (np.abs(jet_eta)<4.7) & (jet_corr_pt>10) & (jet_corr_pt<1000)
+test_time_selection:
+   # (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7==0)
+   (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
 
- new_variables:
-    ### [format] name: formula
-    ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
-    pfcand_mask: ak.ones_like(pfcand_etarel)
-    # FIXME: use (px, py, pz, energy) directly once they are available in the ntuples
-    pfp4: _p4_from_ptetaphie(pfcand_pt_nopuppi, ak.where(jet_eta >= 0, 1, -1) * pfcand_etarel + jet_eta, pfcand_phirel, np.exp(pfcand_e_log_nopuppi))
-    pfcand_px: pfp4.px
-    pfcand_py: pfp4.py
-    pfcand_pz: pfp4.pz
-    pfcand_energy: pfp4.energy
-    sv_mask: ak.ones_like(sv_etarel)
-    svp4: _p4_from_ptetaphie(sv_pt, ak.where(jet_eta >= 0, 1, -1) * sv_etarel + jet_eta, sv_phirel, np.exp(sv_e_log))
-    sv_px: svp4.px
-    sv_py: svp4.py
-    sv_pz: svp4.pz
-    sv_energy: svp4.energy
-    label_b:     (jet_genjet_pt>0) & (jet_nBHadrons==1)
-    label_bb:    (jet_genjet_pt>0) & (jet_nBHadrons>1)
-    label_c:     (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)
-    label_cc:    (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)
-    label_uds:   (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)
-    label_g:     (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)
-    label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)
-    label_pu:    (jet_genjet_pt<=0)
-    label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
-    label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
+new_variables:
+   ### [format] name: formula
+   ### can use functions from `math`, `np` (numpy), and `awkward` in the expression
+   pfcand_mask: awkward.JaggedArray.ones_like(pfcand_etarel)
+   sv_mask: awkward.JaggedArray.ones_like(sv_etarel)
+   edge_features_mask: awkward.JaggedArray.ones_like(pca_distance)
+   label_b:     (jet_genjet_pt>0) & (jet_nBHadrons==1)
+   label_bb:    (jet_genjet_pt>0) & (jet_nBHadrons>1)
+   label_c:     (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)
+   label_cc:    (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)
+   label_uds:   (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)
+   label_g:     (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)
+   label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)
+   label_pu:    (jet_genjet_pt<=0)
+   label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
+   label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
 
 
 preprocess:
