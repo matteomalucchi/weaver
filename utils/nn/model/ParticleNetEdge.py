@@ -4,12 +4,12 @@ import torch.nn as nn
 
 import sys
 
-orig_stdout = sys.stdout
-f = open('out_new.txt', 'w')
-sys.stdout = f
+#orig_stdout = sys.stdout
+#f = open('out_new.txt', 'w')
+#sys.stdout = f
 
-torch.set_printoptions(profile="full")
-np.set_printoptions(threshold=sys.maxsize)
+#torch.set_printoptions(profile="full")
+#np.set_printoptions(threshold=sys.maxsize)
 #torch.set_printoptions(edgeitems=5)
 
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
@@ -26,19 +26,19 @@ def knn(x, k):
 # v1 is faster on GPU
 def get_graph_feature_v1(x, k, idx):
     batch_size, num_dims, num_points = x.size()
-    print("x get graph\n ", x.size(),  "\n"  , x)
+    #print("x get graph\n ", x.size(),  "\n"  , x)
 
-    print("idx get graph\n ", idx.size(),  "\n"  , idx)  # (batch_size, num_points, k)
+    #print("idx get graph\n ", idx.size(),  "\n"  , idx)  # (batch_size, num_points, k)
     idx_base = torch.arange(0, batch_size, device=x.device).view(-1, 1, 1) * num_points # (batch_size, 1, 1)
-    print("idx_base get graph\n ", idx_base.size(),  "\n"  , idx_base)
+    #print("idx_base get graph\n ", idx_base.size(),  "\n"  , idx_base)
     idx = idx + idx_base # for each batch increases the index of a quantity equal to num_points
-    print("idx new get graph\n ", idx.size(),  "\n"  , idx)
+    #print("idx new get graph\n ", idx.size(),  "\n"  , idx)
     idx = idx.view(-1) # (batch_size*num_points*k)
-    print("idx new new get graph\n ", idx.size(),  "\n"  , idx)
+    #print("idx new new get graph\n ", idx.size(),  "\n"  , idx)
 
 
     fts = x.transpose(2, 1).reshape(-1, num_dims)  # (batch_size, num_dims, num_points)-> (batch_size, num_points, num_dims) -> (batch_size*num_points, num_dims)
-    print("fts  get graph\n ", fts.size(),  "\n"  , fts)
+    #print("fts  get graph\n ", fts.size(),  "\n"  , fts)
     fts = fts[idx, :].view(batch_size, num_points, k, num_dims)  # neighbors: -> (batch_size*num_points*k, num_dims) -> ...
     #print("fts new get graph\n ", fts.size(),  "\n"  , fts)
     fts = fts.permute(0, 3, 1, 2).contiguous()  # (batch_size, num_dims, num_points, k)
@@ -72,7 +72,7 @@ def get_graph_feature_v2(x, k, idx):
 
 def get_edges(edge_features, features, k1):
     edge_list = edge_features[:, :2, :] # track1_index and track1_index
-    print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
+    #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
 
     batch_size, num_dims, num_points = features.size()
 
@@ -91,7 +91,7 @@ def get_edges(edge_features, features, k1):
             idx_tensor[batch, pf_idx, j] = edge_list[batch, 1, i]
             j+=1
 
-    print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
+    #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
 
     return idx_tensor
 
@@ -115,14 +115,14 @@ def get_edges(edge_features, features, k1):
         idx_list.append(np.where(edge_list_np[batch][0][:-1] != edge_list_np[batch][0][1:])[0]+1)
 
     idx_change = np.array(list(idx_list))
-    print("idx get_edges\n" ,idx_change.shape, "\n", idx_change)
+    #print("idx get_edges\n" ,idx_change.shape, "\n", idx_change)
 
     #k1=idx.max (della differenza tra indici)
     #if idx[:][:]<k1
 
 
     range_tensor=torch.range(0, num_points, device=features.device).repeat_interleave(k1)
-    print("range new get_edges\n" ,range_tensor.size(), "\n", range_tensor)
+    #print("range new get_edges\n" ,range_tensor.size(), "\n", range_tensor)
 
     idx_base=torch.range(0, num_points*batch_size, batch_size).repeat_interleave(num_points)
     #print("idx_base new get_edges\n" ,idx_base.size(), "\n", idx_base)
@@ -143,7 +143,7 @@ def get_edges(edge_features, features, k1):
                 else:
                     edge_list_tot.append(num_points+1)
 
-    print("edge list tot \n", len(edge_list_tot), '\n', edge_list_tot)
+    #print("edge list tot \n", len(edge_list_tot), '\n', edge_list_tot)
 
 
     #edge_list[:, 0, :]
