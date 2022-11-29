@@ -130,5 +130,4 @@ dmypy.json
 
 *.root
 models*/
-
-
+out*.txt
