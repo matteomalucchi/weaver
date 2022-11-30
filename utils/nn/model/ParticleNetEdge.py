@@ -71,13 +71,11 @@ def get_graph_feature_v2(x, k, idx):
 
 
 def get_edges(edge_features, features, k1):
-    edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track1_index
+
+    edge_list = edge_features[:, :2, :] # track1_index and track1_index
     #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
-
     batch_size, num_dims, num_points = features.size()
-
-
-    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)#.type(torch.LongTensor)
+    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
     for batch in range(batch_size):
         j=0
         for i, pf in enumerate(edge_list[batch, 0]):
@@ -92,11 +90,17 @@ def get_edges(edge_features, features, k1):
             j+=1
 
 
-    '''j=0
+
+    '''edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track1_index
+    #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
+    batch_size, num_dims, num_points = features.size()
+    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
+    #j=0
+    j = torch.arange(0, k1, device=edge_list.device).repeat(batch_size, num_points, 1)
     print(edge_list[:, 0, :])
     for i, pf in enumerate(edge_list[:, 0, :]):
         print(pf)
-        if i!=0 and pf_idx != pf:
+        if i!=0 and not torch.eq(pf_idx ,pf):
             if int(pf.item())==0:
                 j=0
                 break
@@ -104,13 +108,26 @@ def get_edges(edge_features, features, k1):
         if j>=k1:
             j=0
             continue
-        pf_idx=pf[:].type(torch.LongTensor)
+        pf_idx=pf[:].type(torch.int64)
         #pf_idx = pf.int()
         idx_tensor[:, pf_idx[:][i], j] = edge_list[:, 1, i]
-        j+=1'''
+        j+=1
 
+    edge_list = edge_features[:, :2, :].type(torch.int64) # track1_index and track1_index
+    print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
+    batch_size, num_dims, num_points = features.size()
+    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
     #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
 
+
+    print(torch.unsqueeze(edge_list[:, 0, :], dim=1).size())
+    idx_tensor.scatter_(2, torch.unsqueeze(edge_list[:, 0, :], dim=1), torch.unsqueeze(edge_list[:, 1, :], dim=1))
+
+    #idx2_tensor=edge_list[:, 1, :].repeat(1, num_points, 1)
+
+    #idx_tensor[edge_list[:, 0, :]] = idx2_tensor[edge_list[:, 0, :]]'''
+
+    #print("idx_tensor new get_edges\n", idx_tensor.size() , "\n", idx_tensor)
     return idx_tensor
 
 
@@ -332,8 +349,8 @@ class EdgeFeatureConvBlock(nn.Module):
         #print("topk_indices block \n ", topk_indices)
         #print("edge_indices block \n ", edge_indices.size(),  "\n"  , edge_indices)
 
-        #x = self.get_graph_feature(features, self.k, topk_indices)
-        x = self.get_graph_feature(features, self.k1, idx_tensor)
+        x = self.get_graph_feature(features, self.k, topk_indices)
+        #x = self.get_graph_feature(features, self.k1, idx_tensor)
         #x_ef = self.get_graph_edge_feature(edge_features, edge_indices)
         #print("x    \n", x.size(), "\n" )
 
@@ -372,7 +389,7 @@ class ParticleNetEdge(nn.Module):
         super(ParticleNetEdge, self).__init__(**kwargs)
 
 
-        self.k1 = 16
+        self.k1 = 8
 
         self.use_fts_bn = use_fts_bn
         if self.use_fts_bn:
