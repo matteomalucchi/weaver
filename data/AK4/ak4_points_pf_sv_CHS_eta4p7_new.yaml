@@ -130,7 +130,6 @@ observers:
    - pfDeepFlavourJetTags_probuds
    - pfDeepFlavourJetTags_probg
    - jet_qgl
-   - jet_puId
 
 monitor_variables:
    # - jet_pt
