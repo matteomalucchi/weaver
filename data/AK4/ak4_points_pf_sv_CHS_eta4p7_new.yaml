@@ -28,7 +28,7 @@ new_variables:
    label_pu:    (jet_genjet_pt<=0)
    label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
    label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
-   label_error: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)==5)
+   label_error: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & ((np.abs(jet_partonFlavour)==5) | (np.abs(jet_partonFlavour)==4))
 
 
 preprocess:
