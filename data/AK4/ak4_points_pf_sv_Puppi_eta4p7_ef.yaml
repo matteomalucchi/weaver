@@ -99,7 +99,7 @@ inputs:
       vars:
          - [sv_mask, null]
    edge_features:
-      length: 625 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      length: 300 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]
@@ -130,7 +130,7 @@ inputs:
          - [pca_jetAxis_dEta, null]
          - [pca_jetAxis_dPhi_, null]
    edge_features_mask:
-      length: 625 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      length: 300 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [edge_features_mask, null]
 
