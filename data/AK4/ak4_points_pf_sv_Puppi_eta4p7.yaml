@@ -22,11 +22,11 @@ new_variables:
    label_cc:    (jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)
    label_uds:   (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)
    label_g:     (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)
-   label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)
-   label_pu:    (jet_genjet_pt<=0)
+   label_undef: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & ((jet_partonFlavour==0) | (np.abs(jet_partonFlavour)==5) | (np.abs(jet_partonFlavour)==4))
+   label_pu:    (jet_genjet_pt<=0) 
    label_catB: (jet_genjet_pt>0) & (jet_hadronFlavour==5)
    label_catC: (jet_genjet_pt>0) & (jet_hadronFlavour==4)
-   label_error: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & ((np.abs(jet_partonFlavour)==5) | (np.abs(jet_partonFlavour)==4))
+   #label_error: (jet_genjet_pt>0) & (jet_hadronFlavour==0) & ((np.abs(jet_partonFlavour)==5) | (np.abs(jet_partonFlavour)==4))
 
 
 preprocess:
@@ -103,7 +103,7 @@ labels:
    ### type can be `simple`, `custom`
    ### [option 1] use `simple` for binary/multi-class classification, then `value` is a list of 0-1 labels
    type: simple
-   value: [label_b, label_bb, label_c, label_cc, label_uds, label_g, label_undef, label_pu, label_error]
+   value: [label_b, label_bb, label_c, label_cc, label_uds, label_g, label_undef, label_pu]
    ### [option 2] otherwise use `custom` to define the label, then `value` is a map
    # type: custom
    # value:
