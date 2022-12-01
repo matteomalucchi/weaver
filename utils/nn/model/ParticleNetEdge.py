@@ -112,8 +112,9 @@ def get_edges(edge_features, features, k1):
         #pf_idx = pf.int()
         idx_tensor[:, pf_idx[:][i], j] = edge_list[:, 1, i]
         j+=1
+    '''
 
-    edge_list = edge_features[:, :2, :].type(torch.int64) # track1_index and track1_index
+    '''edge_list = edge_features[:, :2, :].type(torch.int64) # track1_index and track2_index
     print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
     batch_size, num_dims, num_points = features.size()
     idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
@@ -121,11 +122,11 @@ def get_edges(edge_features, features, k1):
 
 
     print(torch.unsqueeze(edge_list[:, 0, :], dim=1).size())
-    idx_tensor.scatter_(2, torch.unsqueeze(edge_list[:, 0, :], dim=1), torch.unsqueeze(edge_list[:, 1, :], dim=1))
-
+    idx_tensor.scatter_(1, torch.unsqueeze(edge_list[:, 0, :], dim=1), torch.unsqueeze(edge_list[:, 1, :], dim=1))
+'''
     #idx2_tensor=edge_list[:, 1, :].repeat(1, num_points, 1)
 
-    #idx_tensor[edge_list[:, 0, :]] = idx2_tensor[edge_list[:, 0, :]]'''
+    #idx_tensor[edge_list[:, 0, :]] = idx2_tensor[edge_list[:, 0, :]]
 
     #print("idx_tensor new get_edges\n", idx_tensor.size() , "\n", idx_tensor)
     return idx_tensor
@@ -349,8 +350,8 @@ class EdgeFeatureConvBlock(nn.Module):
         #print("topk_indices block \n ", topk_indices)
         #print("edge_indices block \n ", edge_indices.size(),  "\n"  , edge_indices)
 
-        x = self.get_graph_feature(features, self.k, topk_indices)
-        #x = self.get_graph_feature(features, self.k1, idx_tensor)
+        #x = self.get_graph_feature(features, self.k, topk_indices)
+        x = self.get_graph_feature(features, self.k1, idx_tensor)
         #x_ef = self.get_graph_edge_feature(edge_features, edge_indices)
         #print("x    \n", x.size(), "\n" )
 
