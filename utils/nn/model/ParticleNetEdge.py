@@ -12,6 +12,9 @@ torch.set_printoptions(profile="full")
 #np.set_printoptions(threshold=sys.maxsize)
 #torch.set_printoptions(edgeitems=5)
 
+NEW_EDGES=True
+EDGE_FEATURES=False
+
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
 
 
@@ -70,12 +73,12 @@ def get_graph_feature_v2(x, k, idx):
     return fts
 
 
-def get_edges(edge_features, features, k1):
+def get_edges(edge_features, features, k_ef):
 
-    edge_list = edge_features[:, :2, :] # track1_index and track1_index
+    edge_list = edge_features[:, :2, :] # track1_index and track2_index
     #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
     batch_size, num_dims, num_points = features.size()
-    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
+    idx_tensor= torch.arange(num_points-k_ef, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
     for batch in range(batch_size):
         j=0
         for i, pf in enumerate(edge_list[batch, 0]):
@@ -83,7 +86,7 @@ def get_edges(edge_features, features, k1):
                 if int(pf.item())==0:
                     break
                 j=0
-            if j>=k1:
+            if j>=k_ef:
                 continue
             pf_idx = int(pf.item())
             idx_tensor[batch, pf_idx, j] = edge_list[batch, 1, i]
@@ -91,12 +94,12 @@ def get_edges(edge_features, features, k1):
 
 
 
-    '''edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track1_index
+    '''edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track2_index
     #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
     batch_size, num_dims, num_points = features.size()
-    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
+    idx_tensor= torch.arange(num_points-k_ef, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
     #j=0
-    j = torch.arange(0, k1, device=edge_list.device).repeat(batch_size, num_points, 1)
+    j = torch.arange(0, k_ef, device=edge_list.device).repeat(batch_size, num_points, 1)
     print(edge_list[:, 0, :])
     for i, pf in enumerate(edge_list[:, 0, :]):
         print(pf)
@@ -105,19 +108,19 @@ def get_edges(edge_features, features, k1):
                 j=0
                 break
             j=0
-        if j>=k1:
+        if j>=k_ef:
             j=0
             continue
         pf_idx=pf[:].type(torch.int64)
         #pf_idx = pf.int()
         idx_tensor[:, pf_idx[:][i], j] = edge_list[:, 1, i]
         j+=1
-    '''
 
-    '''edge_list = edge_features[:, :2, :].type(torch.int64) # track1_index and track2_index
+
+    edge_list = edge_features[:, :2, :].type(torch.int64) # track1_index and track2_index
     print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
     batch_size, num_dims, num_points = features.size()
-    idx_tensor= torch.arange(num_points-k1, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
+    idx_tensor= torch.arange(num_points-k_ef, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
     #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
 
 
@@ -153,11 +156,11 @@ def get_edges(edge_features, features, k1):
     idx_change = np.array(list(idx_list))
     #print("idx get_edges\n" ,idx_change.shape, "\n", idx_change)
 
-    #k1=idx.max (della differenza tra indici)
-    #if idx[:][:]<k1
+    #k_ef=idx.max (della differenza tra indici)
+    #if idx[:][:]<k_ef
 
 
-    range_tensor=torch.range(0, num_points, device=features.device).repeat_interleave(k1)
+    range_tensor=torch.range(0, num_points, device=features.device).repeat_interleave(k_ef)
     #print("range new get_edges\n" ,range_tensor.size(), "\n", range_tensor)
 
     idx_base=torch.range(0, num_points*batch_size, batch_size).repeat_interleave(num_points)
@@ -187,7 +190,7 @@ def get_edges(edge_features, features, k1):
     #edge_list_np[:, 0, idx]
 
 
-    #edge_list_tot=  (batch_size*num_points=55*k1)
+    #edge_list_tot=  (batch_size*num_points=55*k_ef)
     """
 
 
@@ -195,7 +198,6 @@ def get_edges(edge_features, features, k1):
 def get_graph_edge_feature_v1(edge_list, edge_features):
 
     return
-
 
 
 # v2 is faster on CPU
@@ -287,6 +289,7 @@ class EdgeConvBlock(nn.Module):
 
         return self.sc_act(sc + fts)  # (N, C_out, P)
 
+
 class EdgeFeatureConvBlock(nn.Module):
     r"""EdgeConv layer.
     Introduced in "`Dynamic Graph CNN for Learning on Point Clouds
@@ -305,13 +308,14 @@ class EdgeFeatureConvBlock(nn.Module):
         Whether to include batch normalization on messages.
     """
 
-    def __init__(self, k, k1, in_feat, out_feats, batch_norm=True, activation=True, cpu_mode=False):
+    def __init__(self, k, k_ef, in_feat, out_feats, in_edgefeat, out_edgefeats, batch_norm=True, activation=True, cpu_mode=False):
         super(EdgeFeatureConvBlock, self).__init__()
         self.batch_norm = batch_norm
         self.activation = activation
         self.num_layers = len(out_feats)
+        self.num_layers_ef = len(out_edgefeats)
         self.k = k
-        self.k1 = k1
+        self.k_ef = k_ef
         self.get_graph_edge_feature = get_graph_edge_feature_v2 if cpu_mode else get_graph_edge_feature_v1
         self.get_graph_feature = get_graph_feature_v2 if cpu_mode else get_graph_feature_v1
 
@@ -319,15 +323,27 @@ class EdgeFeatureConvBlock(nn.Module):
         for i in range(self.num_layers):
             self.convs.append(nn.Conv2d(2 * in_feat if i == 0 else out_feats[i - 1], out_feats[i], kernel_size=1, bias=False if self.batch_norm else True))
 
+
+        self.convs_ef = nn.ModuleList()
+        for i in range(self.num_layers_ef):
+            self.convs_ef.append(nn.Conv2d(in_edgefeat if i == 0 else out_edgefeats[i - 1], out_edgefeats[i], kernel_size=1, bias=False if self.batch_norm else True))
+
+
         if batch_norm:
             self.bns = nn.ModuleList()
             for i in range(self.num_layers):
                 self.bns.append(nn.BatchNorm2d(out_feats[i]))
+            self.bns_ef = nn.ModuleList()
+            for i in range(self.num_layers_ef):
+                self.bns_ef.append(nn.BatchNorm2d(out_edgefeats[i]))
 
         if activation:
             self.acts = nn.ModuleList()
             for i in range(self.num_layers):
                 self.acts.append(nn.ReLU())
+            self.acts_ef = nn.ModuleList()
+            for i in range(self.num_layers_ef):
+                self.acts_ef.append(nn.ReLU())
 
         if in_feat == out_feats[-1]:
             self.sc = None
@@ -335,24 +351,31 @@ class EdgeFeatureConvBlock(nn.Module):
             self.sc = nn.Conv1d(in_feat, out_feats[-1], kernel_size=1, bias=False)
             self.sc_bn = nn.BatchNorm1d(out_feats[-1])
 
+        if in_edgefeat == out_edgefeats[-1]:
+            self.sc_ef = None
+        else:
+            self.sc_ef = nn.Conv1d(in_edgefeat, out_edgefeats[-1], kernel_size=1, bias=False)
+            self.sc_bn_ef = nn.BatchNorm1d(out_edgefeats[-1])
+
         if activation:
             self.sc_act = nn.ReLU()
+            self.sc_act_ef = nn.ReLU()
 
     def forward(self, points, features, edge_features):
         #print('edge_features block:\n', edge_features.size(), '\n', edge_features) #(batch_size, num_ef=28, dim_edgefeatures=625)
         #print("features block \n ",features.size(),  "\n", features )# size (batch_size, num_dims=32, num_points=55)
         #print("points block \n ",points.size(),  "\n" ) # size (batch_size, 2, num_points)
 
-
-        topk_indices = knn(points, self.k)
-        idx_tensor = get_edges(edge_features, features, self.k1) #(batch_size, 2, dim_edgefeatures=625)
+        if NEW_EDGES:
+            topk_indices = get_edges(edge_features, features, self.k_ef) #(batch_size, 2, dim_edgefeatures)
+        else:
+            topk_indices = knn(points, self.k)
         #print("topk_indices block \n ", topk_indices.size(), "\n" ) # size(batch_size, num_points, k)
         #print("topk_indices block \n ", topk_indices)
         #print("edge_indices block \n ", edge_indices.size(),  "\n"  , edge_indices)
 
-        #x = self.get_graph_feature(features, self.k, topk_indices)
-        x = self.get_graph_feature(features, self.k1, idx_tensor)
-        #x_ef = self.get_graph_edge_feature(edge_features, edge_indices)
+        x = self.get_graph_feature(features, self.k, topk_indices)
+
         #print("x    \n", x.size(), "\n" )
 
         for conv, bn, act in zip(self.convs, self.bns, self.acts):
@@ -371,15 +394,39 @@ class EdgeFeatureConvBlock(nn.Module):
         else:
             sc = features
 
-        return self.sc_act(sc + fts)  # (N, C_out, P)
+
+        if EDGE_FEATURES:
+            for convs_ef, bn_ef, act_ef in zip(self.convs_ef, self.bns_ef, self.acts_ef):
+                edge_features = convs_ef(edge_features)
+                if bn_ef:
+                    edge_features = bn_ef(edge_features)
+                if act_ef:
+                    edge_features = act(edge_features)
+
+            edge_fts = edge_features.mean(dim=-1)  # (N, C, P)
+
+            # shortcut
+            if self.sc_ef:
+                sc_ef = self.sc_ef(edge_fts)  # (N, C_out, P)
+                sc_ef = self.sc_bn_ef(sc_ef)
+            else:
+                sc_ef = edge_fts
+
+            return torch.cat((self.sc_act(sc + fts), self.sc_act_ef(sc_ef + edge_fts) ), dim=1) # (N, C_out, P)
+
+        return self.sc_act(sc + fts) # (N, C_out, P)
+
+        ## num points deve esser euguale per fts e edge_fts per poterle concatenare così!!!
 
 
 class ParticleNetEdge(nn.Module):
 
     def __init__(self,
                  input_dims,
+                 edge_features_dims,
                  num_classes,
                  conv_params=[(7, (32, 32, 32)), (7, (64, 64, 64))],
+                 conv_params_ef=[(7, (32, 32, 32)), (7, (64, 64, 64))],
                  fc_params=[(128, 0.1)],
                  use_fusion=True,
                  use_fts_bn=True,
@@ -389,25 +436,24 @@ class ParticleNetEdge(nn.Module):
                  **kwargs):
         super(ParticleNetEdge, self).__init__(**kwargs)
 
-
-        self.k1 = 8
-
         self.use_fts_bn = use_fts_bn
         if self.use_fts_bn:
             self.bn_fts = nn.BatchNorm1d(input_dims)
 
         self.use_counts = use_counts
 
-        self.edge_convs = nn.ModuleList()
-        for idx, layer_param in enumerate(conv_params):
+        self.k_ef = conv_params_ef[0][0]
+
+        self.edge_feat_convs = nn.ModuleList()
+        for idx, (layer_param, layer_param_ef) in enumerate(zip(conv_params, conv_params_ef)):
             k, channels = layer_param
+            k_ef, channels_ef = layer_param_ef
             in_feat = input_dims if idx == 0 else conv_params[idx - 1][1][-1]
-            self.edge_convs.append(EdgeFeatureConvBlock(k=k, k1=self.k1, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference))
-
-        _, channels = conv_params[0]
-        in_feat = input_dims
-        self.edge_feature_convs = EdgeFeatureConvBlock(k=k, k1=self.k1, in_feat=in_feat, out_feats=channels, cpu_mode=for_inference)
-
+            in_edgefeat = edge_features_dims if idx == 0 else conv_params_ef[idx - 1][1][-1]
+            self.edge_feat_convs.append(EdgeFeatureConvBlock(k=k, k_ef=k_ef,
+                                        in_feat=in_feat, out_feats=channels,
+                                        in_edgefeat=in_edgefeat, out_edgefeats=channels_ef,
+                                        cpu_mode=for_inference))
         self.use_fusion = use_fusion
         if self.use_fusion:
             in_chn = sum(x[-1] for _, x in conv_params)
@@ -451,13 +497,14 @@ class ParticleNetEdge(nn.Module):
         batch_size, num_dims, num_points = features.size()
 
 
-        #reshape fts and pts and mask
-        dummy_mask= torch.zeros(batch_size, 1, self.k1, device=mask.device)
-        mask=torch.cat((mask, dummy_mask), dim=2)
-        dummy_features= torch.zeros(batch_size, num_dims, self.k1, device=features.device)
-        features=torch.cat((features, dummy_features), dim=2)
-        dummy_pts= torch.zeros(batch_size, 2, self.k1, device=points.device)
-        points=torch.cat((points, dummy_pts), dim=2)
+        if NEW_EDGES:
+            #reshape fts and pts and mask
+            dummy_mask= torch.zeros(batch_size, 1, self.k_ef, device=mask.device)
+            mask=torch.cat((mask, dummy_mask), dim=2)
+            dummy_features= torch.zeros(batch_size, num_dims, self.k_ef, device=features.device)
+            features=torch.cat((features, dummy_features), dim=2)
+            dummy_pts= torch.zeros(batch_size, 2, self.k_ef, device=points.device)
+            points=torch.cat((points, dummy_pts), dim=2)
 
         coord_shift = (mask == 0) * 1e9 # if masked add 1e9 to coordinates and are not considered in the clustering to knn
         if self.use_counts:
@@ -472,12 +519,10 @@ class ParticleNetEdge(nn.Module):
 
 
 
-        for idx, conv in enumerate(self.edge_convs):
+        for idx, conv in enumerate(self.edge_feat_convs):
             pts = (points if idx == 0 else fts) + coord_shift
             #print('points net:\n', pts)
-            #_=get_edges(edge_features, features)
 
-            #fts_ef = self.edge_feature_convs(pts, fts, edge_features)
             fts = conv(pts, fts, edge_features) * mask
             if self.use_fusion:
                 outputs.append(fts)
@@ -525,6 +570,7 @@ class ParticleNetEdgeTagger(nn.Module):
                  edge_features_dims,
                  num_classes,
                  conv_params=[(7, (32, 32, 32)), (7, (64, 64, 64))],
+                 conv_params_ef=[(7, (32, 32, 32)), (7, (64, 64, 64))],
                  fc_params=[(128, 0.1)],
                  use_fusion=True,
                  use_fts_bn=True,
@@ -539,14 +585,15 @@ class ParticleNetEdgeTagger(nn.Module):
         self.pf_conv = FeatureConv(pf_features_dims, 32) # sets the dimension of the features of pv and pf to be equal
         self.sv_conv = FeatureConv(sv_features_dims, 32)
         self.pn = ParticleNetEdge(input_dims=32,
+                              edge_features_dims=edge_features_dims,
                               num_classes=num_classes,
                               conv_params=conv_params,
+                              conv_params_ef=conv_params_ef,
                               fc_params=fc_params,
                               use_fusion=use_fusion,
                               use_fts_bn=use_fts_bn,
                               use_counts=use_counts,
                               for_inference=for_inference)
-
     def forward(self, pf_points, pf_features, pf_mask, sv_points, sv_features, sv_mask, edge_features, edge_features_mask):
         '''print('\n\n\nedge_features tagger:\n', edge_features.size())
 

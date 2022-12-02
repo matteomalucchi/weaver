@@ -1,0 +1,25 @@
+/m100/home/userexternal/mmalucch/weaver/utils/data/preprocess.py:190: RuntimeWarning: divide by zero encountered in true_divide
+  wgt = np.clip(np.nan_to_num(ref_val / hist, posinf=0), 0, 1)
+/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3474: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/numpy/core/_methods.py:189: RuntimeWarning: invalid value encountered in true_divide
+  ret = ret.dtype.type(ret / rcount)
+Traceback (most recent call last):
+  File "train.py", line 889, in <module>
+    main(args)
+  File "train.py", line 687, in main
+    train_loader, val_loader, data_config, train_input_names, train_label_names = train_load(args)
+  File "train.py", line 223, in train_load
+    train_data = SimpleIterDataset(train_file_dict, args.data_config, for_training=True,
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 362, in __init__
+    self._data_config = w.produce(data_config_autogen_file)
+  File "/m100/home/userexternal/mmalucch/weaver/utils/data/preprocess.py", line 224, in produce
+    wgts = self.make_weights(table)
+  File "/m100/home/userexternal/mmalucch/weaver/utils/data/preprocess.py", line 185, in make_weights
+    min_val, med_val = np.min(nonzero_vals), np.median(hist)  # not really used
+  File "<__array_function__ internals>", line 180, in amin
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/numpy/core/fromnumeric.py", line 2916, in amin
+    return _wrapreduction(a, np.minimum, 'min', axis, None, out,
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+ValueError: zero-size array to reduction operation minimum which has no identity

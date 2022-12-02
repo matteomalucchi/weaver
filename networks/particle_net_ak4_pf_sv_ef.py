@@ -4,7 +4,12 @@ from utils.nn.model.ParticleNetEdge import ParticleNetEdgeTagger
 
 def get_model(data_config, **kwargs):
     conv_params = [
-        (8, (64, 64, 64)),
+        (8, (64, 64, 64)),# (k-nn, (convolution paramenters))
+        (8, (96, 96, 96)),
+        (8, (128, 128, 128)),
+        ]
+    conv_params_ef = [
+        (8, (64, 64, 64)),# (k-nn, (convolution paramenters))
         (8, (96, 96, 96)),
         (8, (128, 128, 128)),
         ]
@@ -16,7 +21,7 @@ def get_model(data_config, **kwargs):
     edge_features_dims = len(data_config.input_dicts['edge_features'])
     num_classes = len(data_config.label_value)
     model = ParticleNetEdgeTagger(pf_features_dims, sv_features_dims, edge_features_dims, num_classes,
-                              conv_params, fc_params,
+                              conv_params, conv_params_ef, fc_params,
                               use_fusion=use_fusion,
                               use_fts_bn=kwargs.get('use_fts_bn', False),
                               use_counts=kwargs.get('use_counts', True),
