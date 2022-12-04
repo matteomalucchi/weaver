@@ -99,11 +99,14 @@ inputs:
       length: 5
       vars:
          - [sv_mask, null]
-   edge_features:
+   edge_list:
       length: 300 # max lenght of the variable for each event (eg: max number of tracks combinations)
       vars:
          - [track1_index, null]
          - [track2_index, null]
+   edge_features:
+      length: 300 # max lenght of the variable for each event (eg: max number of tracks combinations)
+      vars:
          - [pca_distance, null]
          - [pca_significance, null]
          - [pcaSeed_x1, null]

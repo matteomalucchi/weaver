@@ -9,10 +9,11 @@ def get_model(data_config, **kwargs):
         (8, (128, 128, 128)),
         ]
     conv_params_ef = [
-        (8, (64, 64, 64)),# (k-nn, (convolution paramenters))
-        (8, (96, 96, 96)),
+        (8, (96, 96, 96)),# (k-nn, (convolution paramenters))
         (8, (128, 128, 128)),
+        (8, (160, 160, 160)),
         ]
+    fc_params_ef = [(398, 0.1)]
     fc_params = [(128, 0.1)]
     use_fusion = True
 
