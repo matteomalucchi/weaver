@@ -4,17 +4,19 @@ import torch.nn as nn
 
 import sys
 
-#orig_stdout = sys.stdout
-#f = open('out_new.txt', 'w')
-#sys.stdout = f
+orig_stdout = sys.stdout
+f = open('out_new.txt', 'w')
+sys.stdout = f
 
 torch.set_printoptions(profile="full")
 #np.set_printoptions(threshold=sys.maxsize)
 #torch.set_printoptions(edgeitems=5)
 
 NEW_EDGES=False
+NEW_EDGES_DUMMY=False
 EDGE_FEATURES=False
 EDGE_FEATURES_OR_CONNECTION=True
+EDGE_FEATURES_OR_CONNECTION_DUMMY=False
 
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
 
@@ -46,8 +48,9 @@ def get_edges(el, bs, np, k_ef):
 
     return idx_tensor
 
-
-    '''edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track2_index
+"""
+def prova():
+    edge_list = edge_features[:, :2, :]#.type(torch.LongTensor) # track1_index and track2_index
     #print("edgeList get_edges\n", edge_list.size() , "\n", edge_list)
     batch_size, num_dims, num_points = features.size()
     idx_tensor= torch.arange(num_points-k_ef, num_points, device=edge_list.device).repeat(batch_size, num_points, 1)
@@ -84,7 +87,7 @@ def get_edges(el, bs, np, k_ef):
 
     #idx_tensor[edge_list[:, 0, :]] = idx2_tensor[edge_list[:, 0, :]]
 
-    #print("idx_tensor new get_edges\n", idx_tensor.size() , "\n", idx_tensor)'''
+    #print("idx_tensor new get_edges\n", idx_tensor.size() , "\n", idx_tensor)"""
 
 def edges_or(idx_tensor, el, bs, np, k_ef, efs):
     #print("edgeList get_edges\n", el.size() , "\n", el)
@@ -111,7 +114,9 @@ def edges_or(idx_tensor, el, bs, np, k_ef, efs):
             idx_tensor[batch, pf_idx, j] = el[batch, 1, i]
             for h, ef in enumerate(efs[batch, i]):
                 efs_tensor[batch, h, pf_idx, j] = ef
+
             j+=1
+
 
 
 
@@ -119,6 +124,79 @@ def edges_or(idx_tensor, el, bs, np, k_ef, efs):
     #print("idx new get_edges\n", idx.size() , "\n", idx)
     return idx_tensor, efs_tensor
 
+
+def edges_or_new_dummy(idx_tensor, el, bs, np, k_ef, efs):
+    print("edgeList get_edges\n", el.size() , "\n", el)
+
+    print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
+    #print("efs \n", efs.size() , "\n", efs)
+
+    efs = efs.transpose(2, 1) #(batch_size, lenght_edgefeatures, num_ef)
+    #print("efs new\n", efs.size() , "\n", efs)
+
+    num_ef=efs.size()[2]
+    efs_tensor= torch.zeros(bs, num_ef, np, k_ef, device=efs.device)
+    idx_tensor_final= torch.arange(np-k_ef, np, device=el.device).repeat(bs, np, 1)
+
+    for batch in range(bs):
+        j=0
+        for i, pf in enumerate(el[batch, 0]):
+            if i!=0 and pf_idx != int(pf.item()):
+                if int(pf.item())==0:
+                    break
+                j=0
+            if j>=k_ef:
+                continue
+            pf_idx = int(pf.item())
+            idx_tensor_final[batch, pf_idx, j] = el[batch, 1, i]
+            for h, ef in enumerate(efs[batch, i]):
+                efs_tensor[batch, h, pf_idx, j] = ef
+
+            j+=1
+        for pf_idx in range(np):
+            if idx_tensor_final[batch, pf_idx, 0] == np-k_ef:
+                idx_tensor_final[batch, pf_idx] = idx_tensor[batch, pf_idx]
+
+    #print("efs_tensor \n", efs_tensor.size() , "\n", efs_tensor)
+    print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
+    return idx_tensor_final, efs_tensor
+
+
+def edges_or_new(idx_tensor, el, bs, np, k_ef, efs):
+    print("edgeList get_edges\n", el.size() , "\n", el)
+
+    print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
+    #print("efs \n", efs.size() , "\n", efs)
+
+    efs = efs.transpose(2, 1) #(batch_size, lenght_edgefeatures, num_ef)
+    #print("efs new\n", efs.size() , "\n", efs)
+
+    num_ef=efs.size()[2]
+    efs_tensor= torch.zeros(bs, num_ef, np, k_ef, device=efs.device)
+    idx_tensor_final= torch.zeros(bs, np, k_ef, device=efs.device).type(torch.int64)+np-1
+
+    for batch in range(bs):
+        j=0
+        for i, pf in enumerate(el[batch, 0]):
+            if i!=0 and pf_idx != int(pf.item()):
+                if int(pf.item())==0:
+                    break
+                j=0
+            if j>=k_ef:
+                continue
+            pf_idx = int(pf.item())
+            idx_tensor_final[batch, pf_idx, j] = el[batch, 1, i]
+            for h, ef in enumerate(efs[batch, i]):
+                efs_tensor[batch, h, pf_idx, j] = ef
+
+            j+=1
+        for pf_idx in range(np):
+            if idx_tensor_final[batch, pf_idx, 0] == np-1:
+                idx_tensor_final[batch, pf_idx] = idx_tensor[batch, pf_idx]
+
+    #print("efs_tensor \n", efs_tensor.size() , "\n", efs_tensor)
+    print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
+    return idx_tensor_final, efs_tensor
 
 
 # v1 is faster on GPU
@@ -167,8 +245,8 @@ def get_graph_feature_v2(x, k, idx):
 
     return fts
 
-
-"""for j in range((edgeList.size())[0]):
+"""
+for j in range((edgeList.size())[0]):
         G = networkx.DiGraph()
         for i in range((edgeList.size())[2]):
             G.add_edge(edgeList[j, 0, i], edgeList[j, 1, i])
@@ -180,7 +258,7 @@ def get_graph_feature_v2(x, k, idx):
     edge_list_np=edge_list[:, :, :].cpu().detach().numpy()
     #print(' numpy get_edges \n', edge_list_np.shape,  "\n", edge_list_np)
 
-    #list of where the idx changes
+    #list of wheref the idx changes
     idx_list=[]
     for batch in range(batch_size):
         idx_list.append(np.where(edge_list_np[batch][0][:-1] != edge_list_np[batch][0][1:])[0]+1)
@@ -223,7 +301,8 @@ def get_graph_feature_v2(x, k, idx):
 
 
     #edge_list_tot=  (batch_size*num_points=55*k_ef)
-    """
+
+"""
 
 
 # v1 is faster on GPU
@@ -433,7 +512,7 @@ class EdgeFeatureConvBlock(nn.Module):
             topk_indices = get_edges(edge_list, batch_size, num_points, self.k_ef) #(batch_size, 2, dim_edgefeatures)
         elif EDGE_FEATURES_OR_CONNECTION and idx==0:
             topk_indices = knn(points, self.k)
-            topk_indices, edge_features = edges_or(topk_indices, edge_list, batch_size, num_points, self.k_ef, edge_features)
+            topk_indices, edge_features = edges_or_new(topk_indices, edge_list, batch_size, num_points, self.k_ef, edge_features)
         else:
             topk_indices = knn(points, self.k)
 
@@ -574,12 +653,21 @@ class ParticleNetEdge(nn.Module):
 
 
         #reshape fts and pts and mask
-        if NEW_EDGES:
+        if NEW_EDGES_DUMMY or EDGE_FEATURES_OR_CONNECTION_DUMMY:
             dummy_mask= torch.zeros(batch_size, 1, self.k_ef, device=mask.device)
             mask=torch.cat((mask, dummy_mask), dim=2)
             dummy_features= torch.zeros(batch_size, num_dims, self.k_ef, device=features.device)
             features=torch.cat((features, dummy_features), dim=2)
             dummy_pts= torch.zeros(batch_size, 2, self.k_ef, device=points.device)
+            points=torch.cat((points, dummy_pts), dim=2)
+
+        #reshape fts and pts and mask
+        if NEW_EDGES or EDGE_FEATURES_OR_CONNECTION:
+            dummy_mask= torch.zeros(batch_size, 1, 1, device=mask.device)
+            mask=torch.cat((mask, dummy_mask), dim=2)
+            dummy_features= torch.zeros(batch_size, num_dims, 1, device=features.device)
+            features=torch.cat((features, dummy_features), dim=2)
+            dummy_pts= torch.zeros(batch_size, 2, 1, device=points.device)
             points=torch.cat((points, dummy_pts), dim=2)
 
         coord_shift = (mask == 0) * 1e9 # if masked add 1e9 to coordinates and are not considered in the clustering to knn

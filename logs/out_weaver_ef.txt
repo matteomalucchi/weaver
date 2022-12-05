@@ -1,0 +1,1122 @@
+(weaver) [mmalucch@r251n09 weaver]$ python train.py --data-train $WORK/$USER/output3_distcut_pt.root  --data-test $WORK/$USER/output3_distcut_pt.root  --data-config data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.yaml  --network-config networks/particle_net_pf_sv_ef.py  --model-prefix models_3_ef/  --gpus 0,1,2,3 --batch-size 512 --start-lr 5e-3 --num-epochs 3 --optimizer ranger  --log logs/train3_ef.log
+[2022-11-29 16:46:18,028] INFO: args:
+ - ('regression_mode', False)
+ - ('data_config', 'data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.yaml')
+ - ('data_train', ['/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root'])
+ - ('data_val', [])
+ - ('data_test', ['/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root'])
+ - ('data_fraction', 1)
+ - ('file_fraction', 1)
+ - ('fetch_by_files', False)
+ - ('fetch_step', 0.01)
+ - ('in_memory', False)
+ - ('train_val_split', 0.8)
+ - ('demo', False)
+ - ('lr_finder', None)
+ - ('tensorboard', None)
+ - ('tensorboard_custom_fn', None)
+ - ('network_config', 'networks/particle_net_pf_sv_ef.py')
+ - ('network_option', [])
+ - ('model_prefix', 'models_3_ef/')
+ - ('load_model_weights', None)
+ - ('num_epochs', 3)
+ - ('steps_per_epoch', None)
+ - ('steps_per_epoch_val', None)
+ - ('samples_per_epoch', None)
+ - ('samples_per_epoch_val', None)
+ - ('optimizer', 'ranger')
+ - ('optimizer_option', [])
+ - ('lr_scheduler', 'flat+decay')
+ - ('warmup_steps', 0)
+ - ('load_epoch', None)
+ - ('start_lr', 0.005)
+ - ('batch_size', 512)
+ - ('use_amp', False)
+ - ('gpus', '0,1,2,3')
+ - ('predict_gpus', '0,1,2,3')
+ - ('num_workers', 1)
+ - ('predict', False)
+ - ('predict_output', None)
+ - ('export_onnx', None)
+ - ('io_test', False)
+ - ('copy_inputs', False)
+ - ('log', 'logs/train3_ef.log')
+ - ('print', False)
+ - ('profile', False)
+ - ('backend', None)
+ - ('local_rank', None)
+[2022-11-29 16:46:18,029] INFO: Running in classification mode
+[2022-11-29 16:46:24,584] INFO: Using 1 files for training, range: (0, 0.8)
+[2022-11-29 16:46:24,585] INFO: Using 1 files for validation, range: (0.8, 1)
+[2022-11-29 16:46:24,587] INFO: Found file data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.fee5db13b42708cba1cd7e4fef1d1549.auto.yaml w/ auto-generated preprocessing information, will use that instead!
+[2022-11-29 16:46:24,812] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 16:46:24,813] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 16:46:24,813] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 16:46:24,829] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 16:46:24,829] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 16:46:24,829] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 16:46:24,829] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 16:46:24,829] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 16:46:24,891] INFO: label_names: ('_label_',)
+[2022-11-29 16:46:24,891] INFO: observer_names: ('event_no', 'jet_no', 'jet_pt', 'jet_eta', 'jet_phi', 'jet_hadronFlavour', 'jet_partonFlavour', 'jet_genjet_pt', 'npfcands', 'pfDeepFlavourJetTags_probb', 'pfDeepFlavourJetTags_probbb', 'pfDeepFlavourJetTags_problepb', 'pfDeepFlavourJetTags_probc', 'pfDeepFlavourJetTags_probuds', 'pfDeepFlavourJetTags_probg', 'jet_qgl')
+[2022-11-29 16:46:24,891] INFO: monitor_variables: ()
+[2022-11-29 16:46:24,891] INFO: reweight_method: flat
+[2022-11-29 16:46:24,891] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 16:46:24,891] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 16:46:24,891] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 16:46:24,891] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 16:46:24,891] INFO: reweight_threshold: 25
+[2022-11-29 16:46:24,892] INFO: reweight_discard_under_overflow: True
+[2022-11-29 16:46:25,090] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 16:46:25,090] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 16:46:25,091] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 16:46:25,091] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 16:46:25,091] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 16:46:25,091] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 16:46:25,091] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 16:46:25,091] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 16:46:25,092] INFO: label_names: ('_label_',)
+[2022-11-29 16:46:25,092] INFO: observer_names: ()
+[2022-11-29 16:46:25,092] INFO: monitor_variables: ()
+[2022-11-29 16:46:25,092] INFO: reweight_method: flat
+[2022-11-29 16:46:25,092] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 16:46:25,092] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 16:46:25,092] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 16:46:25,092] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 16:46:25,092] INFO: reweight_threshold: 25
+[2022-11-29 16:46:25,092] INFO: reweight_discard_under_overflow: True
+[2022-11-29 16:46:25,094] INFO: Found file data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.fee5db13b42708cba1cd7e4fef1d1549.auto.yaml w/ auto-generated preprocessing information, will use that instead!
+[2022-11-29 16:46:25,291] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 16:46:25,291] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 16:46:25,291] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 16:46:25,291] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 16:46:25,291] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 16:46:25,292] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 16:46:25,292] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 16:46:25,292] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 16:46:25,292] INFO: label_names: ('_label_',)
+[2022-11-29 16:46:25,292] INFO: observer_names: ('event_no', 'jet_no', 'jet_pt', 'jet_eta', 'jet_phi', 'jet_hadronFlavour', 'jet_partonFlavour', 'jet_genjet_pt', 'npfcands', 'pfDeepFlavourJetTags_probb', 'pfDeepFlavourJetTags_probbb', 'pfDeepFlavourJetTags_problepb', 'pfDeepFlavourJetTags_probc', 'pfDeepFlavourJetTags_probuds', 'pfDeepFlavourJetTags_probg', 'jet_qgl')
+[2022-11-29 16:46:25,292] INFO: monitor_variables: ()
+[2022-11-29 16:46:25,293] INFO: reweight_method: flat
+[2022-11-29 16:46:25,293] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 16:46:25,293] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 16:46:25,293] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 16:46:25,293] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 16:46:25,293] INFO: reweight_threshold: 25
+[2022-11-29 16:46:25,293] INFO: reweight_discard_under_overflow: True
+[2022-11-29 16:46:25,492] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 16:46:25,492] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 16:46:25,492] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 16:46:25,492] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 16:46:25,492] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 16:46:25,492] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 16:46:25,492] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 16:46:25,493] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 16:46:25,493] INFO: label_names: ('_label_',)
+[2022-11-29 16:46:25,493] INFO: observer_names: ()
+[2022-11-29 16:46:25,493] INFO: monitor_variables: ()
+[2022-11-29 16:46:25,493] INFO: reweight_method: flat
+[2022-11-29 16:46:25,493] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 16:46:25,493] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 16:46:25,493] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 16:46:25,494] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 16:46:25,494] INFO: reweight_threshold: 25
+[2022-11-29 16:46:25,494] INFO: reweight_discard_under_overflow: True
+[2022-11-29 16:46:25,609] INFO: Network options: {}
+[2022-11-29 16:46:26,239] INFO: Warning: module FeatureConv is treated as a zero-op.
+[2022-11-29 16:46:26,239] INFO: Warning: module EdgeFeatureConvBlock is treated as a zero-op.
+[2022-11-29 16:46:26,240] INFO: Warning: module Dropout is treated as a zero-op.
+[2022-11-29 16:46:26,240] INFO: Warning: module ParticleNetEdge is treated as a zero-op.
+[2022-11-29 16:46:26,240] INFO: Warning: module ParticleNetEdgeTagger is treated as a zero-op.
+[2022-11-29 16:46:27,353] INFO: ParticleNetEdgeTagger(
+  |0.594 M, 100.000% Params, 313.31 MMac, 100.000% MACs|
+  (pf_conv): FeatureConv(
+    |0.001 M, 0.125% Params, 38.8 KMac, 0.012% MACs|
+    (conv): Sequential(
+      |0.001 M, 0.125% Params, 38.8 KMac, 0.012% MACs|
+      (0): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.007% Params, 2.0 KMac, 0.001% MACs|)
+      (1): Conv1d(20, 32, kernel_size=(1,), stride=(1,), bias=False, |0.001 M, 0.108% Params, 32.0 KMac, 0.010% MACs|)
+      (2): BatchNorm1d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.011% Params, 3.2 KMac, 0.001% MACs|)
+      (3): ReLU(|0.0 M, 0.000% Params, 1.6 KMac, 0.001% MACs|)
+    )
+  )
+  (sv_conv): FeatureConv(
+    |0.0 M, 0.074% Params, 2.35 KMac, 0.001% MACs|
+    (conv): Sequential(
+      |0.0 M, 0.074% Params, 2.35 KMac, 0.001% MACs|
+      (0): BatchNorm1d(11, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.004% Params, 110.0 Mac, 0.000% MACs|)
+      (1): Conv1d(11, 32, kernel_size=(1,), stride=(1,), bias=False, |0.0 M, 0.059% Params, 1.76 KMac, 0.001% MACs|)
+      (2): BatchNorm1d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.011% Params, 320.0 Mac, 0.000% MACs|)
+      (3): ReLU(|0.0 M, 0.000% Params, 160.0 Mac, 0.000% MACs|)
+    )
+  )
+  (pn): ParticleNetEdge(
+    |0.593 M, 99.801% Params, 313.269 MMac, 99.987% MACs|
+    (edge_convs): ModuleList(
+      |0.305 M, 51.279% Params, 300.872 MMac, 96.030% MACs|
+      (0): EdgeFeatureConvBlock(
+        |0.015 M, 2.499% Params, 14.773 MMac, 4.715% MACs|
+        (convs): ModuleList(
+          |0.012 M, 2.068% Params, 13.959 MMac, 4.455% MACs|
+          (0): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 4.653 MMac, 1.485% MACs|)
+          (1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 4.653 MMac, 1.485% MACs|)
+          (2): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 4.653 MMac, 1.485% MACs|)
+        )
+        (bns): ModuleList(
+          |0.0 M, 0.065% Params, 436.224 KMac, 0.139% MACs|
+          (0): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 145.408 KMac, 0.046% MACs|)
+          (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 145.408 KMac, 0.046% MACs|)
+          (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 145.408 KMac, 0.046% MACs|)
+        )
+        (acts): ModuleList(
+          |0.0 M, 0.000% Params, 218.112 KMac, 0.070% MACs|
+          (0): ReLU(|0.0 M, 0.000% Params, 72.704 KMac, 0.023% MACs|)
+          (1): ReLU(|0.0 M, 0.000% Params, 72.704 KMac, 0.023% MACs|)
+          (2): ReLU(|0.0 M, 0.000% Params, 72.704 KMac, 0.023% MACs|)
+        )
+        (sc): Conv1d(32, 64, kernel_size=(1,), stride=(1,), bias=False, |0.002 M, 0.345% Params, 145.408 KMac, 0.046% MACs|)
+        (sc_bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 9.088 KMac, 0.003% MACs|)
+        (sc_act): ReLU(|0.0 M, 0.000% Params, 4.544 KMac, 0.001% MACs|)
+      )
+      (1): EdgeFeatureConvBlock(
+        |0.058 M, 9.825% Params, 57.754 MMac, 18.434% MACs|
+        (convs): ModuleList(
+          |0.049 M, 8.274% Params, 55.837 MMac, 17.822% MACs|
+          (0): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.016 M, 2.758% Params, 18.612 MMac, 5.941% MACs|)
+          (1): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.016 M, 2.758% Params, 18.612 MMac, 5.941% MACs|)
+          (2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.016 M, 2.758% Params, 18.612 MMac, 5.941% MACs|)
+        )
+        (bns): ModuleList(
+          |0.001 M, 0.129% Params, 872.448 KMac, 0.278% MACs|
+          (0): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.043% Params, 290.816 KMac, 0.093% MACs|)
+          (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.043% Params, 290.816 KMac, 0.093% MACs|)
+          (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.043% Params, 290.816 KMac, 0.093% MACs|)
+        )
+        (acts): ModuleList(
+          |0.0 M, 0.000% Params, 436.224 KMac, 0.139% MACs|
+          (0): ReLU(|0.0 M, 0.000% Params, 145.408 KMac, 0.046% MACs|)
+          (1): ReLU(|0.0 M, 0.000% Params, 145.408 KMac, 0.046% MACs|)
+          (2): ReLU(|0.0 M, 0.000% Params, 145.408 KMac, 0.046% MACs|)
+        )
+        (sc): Conv1d(64, 128, kernel_size=(1,), stride=(1,), bias=False, |0.008 M, 1.379% Params, 581.632 KMac, 0.186% MACs|)
+        (sc_bn): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.043% Params, 18.176 KMac, 0.006% MACs|)
+        (sc_act): ReLU(|0.0 M, 0.000% Params, 9.088 KMac, 0.003% MACs|)
+      )
+      (2): EdgeFeatureConvBlock(
+        |0.231 M, 38.955% Params, 228.345 MMac, 72.882% MACs|
+        (convs): ModuleList(
+          |0.197 M, 33.094% Params, 223.347 MMac, 71.286% MACs|
+          (0): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.066 M, 11.031% Params, 74.449 MMac, 23.762% MACs|)
+          (1): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.066 M, 11.031% Params, 74.449 MMac, 23.762% MACs|)
+          (2): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.066 M, 11.031% Params, 74.449 MMac, 23.762% MACs|)
+        )
+        (bns): ModuleList(
+          |0.002 M, 0.259% Params, 1.745 MMac, 0.557% MACs|
+          (0): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.001 M, 0.086% Params, 581.632 KMac, 0.186% MACs|)
+          (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.001 M, 0.086% Params, 581.632 KMac, 0.186% MACs|)
+          (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.001 M, 0.086% Params, 581.632 KMac, 0.186% MACs|)
+        )
+        (acts): ModuleList(
+          |0.0 M, 0.000% Params, 872.448 KMac, 0.278% MACs|
+          (0): ReLU(|0.0 M, 0.000% Params, 290.816 KMac, 0.093% MACs|)
+          (1): ReLU(|0.0 M, 0.000% Params, 290.816 KMac, 0.093% MACs|)
+          (2): ReLU(|0.0 M, 0.000% Params, 290.816 KMac, 0.093% MACs|)
+        )
+        (sc): Conv1d(128, 256, kernel_size=(1,), stride=(1,), bias=False, |0.033 M, 5.516% Params, 2.327 MMac, 0.743% MACs|)
+        (sc_bn): BatchNorm1d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.001 M, 0.086% Params, 36.352 KMac, 0.012% MACs|)
+        (sc_act): ReLU(|0.0 M, 0.000% Params, 18.176 KMac, 0.006% MACs|)
+      )
+    )
+    (edge_feature_convs): EdgeFeatureConvBlock(
+      |0.015 M, 2.499% Params, 0.0 Mac, 0.000% MACs|
+      (convs): ModuleList(
+        |0.012 M, 2.068% Params, 0.0 Mac, 0.000% MACs|
+        (0): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 0.0 Mac, 0.000% MACs|)
+        (1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 0.0 Mac, 0.000% MACs|)
+        (2): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False, |0.004 M, 0.689% Params, 0.0 Mac, 0.000% MACs|)
+      )
+      (bns): ModuleList(
+        |0.0 M, 0.065% Params, 0.0 Mac, 0.000% MACs|
+        (0): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 0.0 Mac, 0.000% MACs|)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 0.0 Mac, 0.000% MACs|)
+        (2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 0.0 Mac, 0.000% MACs|)
+      )
+      (acts): ModuleList(
+        |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|
+        (0): ReLU(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (1): ReLU(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+        (2): ReLU(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+      )
+      (sc): Conv1d(32, 64, kernel_size=(1,), stride=(1,), bias=False, |0.002 M, 0.345% Params, 0.0 Mac, 0.000% MACs|)
+      (sc_bn): BatchNorm1d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.0 M, 0.022% Params, 0.0 Mac, 0.000% MACs|)
+      (sc_act): ReLU(|0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+    )
+    (fusion_block): Sequential(
+      |0.173 M, 29.087% Params, 12.296 MMac, 3.925% MACs|
+      (0): Conv1d(448, 384, kernel_size=(1,), stride=(1,), bias=False, |0.172 M, 28.957% Params, 12.214 MMac, 3.898% MACs|)
+      (1): BatchNorm1d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True, |0.001 M, 0.129% Params, 54.528 KMac, 0.017% MACs|)
+      (2): ReLU(|0.0 M, 0.000% Params, 27.264 KMac, 0.009% MACs|)
+    )
+    (fc): Sequential(
+      |0.101 M, 16.936% Params, 100.872 KMac, 0.032% MACs|
+      (0): Sequential(
+        |0.099 M, 16.590% Params, 98.816 KMac, 0.032% MACs|
+        (0): Linear(in_features=384, out_features=256, bias=True, |0.099 M, 16.590% Params, 98.56 KMac, 0.031% MACs|)
+        (1): ReLU(|0.0 M, 0.000% Params, 256.0 Mac, 0.000% MACs|)
+        (2): Dropout(p=0.1, inplace=False, |0.0 M, 0.000% Params, 0.0 Mac, 0.000% MACs|)
+      )
+      (1): Linear(in_features=256, out_features=8, bias=True, |0.002 M, 0.346% Params, 2.056 KMac, 0.001% MACs|)
+    )
+  )
+)
+[2022-11-29 16:46:27,357] INFO: Computational complexity:       313.31 MMac
+[2022-11-29 16:46:27,357] INFO: Number of parameters:           594.09 k
+[2022-11-29 16:46:27,357] INFO: Using loss function CrossEntropyLoss() with options {}
+[2022-11-29 16:46:41,544] INFO: Optimizer options: {}
+[2022-11-29 16:46:41,589] INFO: --------------------------------------------------
+[2022-11-29 16:46:41,589] INFO: Epoch #0 training
+0it [00:00, ?it/s]=== Restarting DataIter train_worker0, seed=50582711 ===
+[2022-11-29 16:46:41,648] INFO: Restarted DataIter train_worker0, load_range=(0.0, 0.8), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+116it [16:22,  8.47s/it, lr=5.00e-03, Loss=1.03661, AvgLoss=1.28620, Acc=0.59961, AvgAcc=0.53500]
+[2022-11-29 17:03:04,358] INFO: Processed 59392 entries in total (avg. speed 60.4 entries/s)
+[2022-11-29 17:03:04,358] INFO: Train AvgLoss: 1.28620, AvgAcc: 0.53500
+[2022-11-29 17:03:04,358] INFO: Train class distribution: 
+    [(0, 5972), (1, 78), (2, 5448), (3, 439), (4, 14804), (5, 29727), (6, 1738), (7, 1186)]
+[2022-11-29 17:03:04,460] INFO: Epoch #0 validating
+0it [00:00, ?it/s]=== Restarting DataIter val_worker0, seed=4266650935 ===
+[2022-11-29 17:03:04,488] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+29it [03:47,  7.85s/it, Loss=1.06497, AvgLoss=1.13106, Acc=0.57227, AvgAcc=0.58533]
+[2022-11-29 17:06:52,188] INFO: Processed 14848 entries in total (avg. speed 65.2 entries/s)
+[2022-11-29 17:06:52,188] INFO: Evaluation class distribution: 
+    [(0, 1393), (1, 14), (2, 1400), (3, 123), (4, 3727), (5, 7395), (6, 471), (7, 325)]
+[2022-11-29 17:06:52,378] INFO: Evaluation metrics: 
+    - roc_auc_score: 
+0.6801308756957175
+    - roc_auc_score_matrix: 
+[[0.         0.4489796  0.7846026  0.66150147 0.8924441  0.9039738
+  0.96159595 0.85718477]
+ [0.         0.         0.32938775 0.5156794  0.9539077  0.92011976
+  0.97770697 0.46021977]
+ [0.         0.         0.         0.4342799  0.69444054 0.7417114
+  0.93697906 0.72341096]
+ [0.         0.         0.         0.         0.76951534 0.7260212
+  0.95185816 0.77583486]
+ [0.         0.         0.         0.         0.         0.7261226
+  0.93199617 0.7545561 ]
+ [0.         0.         0.         0.         0.         0.
+  0.9547318  0.7677162 ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.884795  ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.        ]]
+    - confusion_matrix: 
+[[6.23833453e-01 0.00000000e+00 7.17875090e-04 0.00000000e+00
+  5.52763819e-02 3.20172290e-01 0.00000000e+00 0.00000000e+00]
+ [8.57142857e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  0.00000000e+00 1.42857143e-01 0.00000000e+00 0.00000000e+00]
+ [2.12857143e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  1.50714286e-01 6.31428571e-01 5.00000000e-03 0.00000000e+00]
+ [3.17073171e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  8.94308943e-02 5.93495935e-01 0.00000000e+00 0.00000000e+00]
+ [5.25892138e-02 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  2.95680172e-01 6.48510867e-01 3.21974779e-03 0.00000000e+00]
+ [3.12373225e-02 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  8.01893171e-02 8.81812035e-01 6.76132522e-03 0.00000000e+00]
+ [4.67091295e-02 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  3.26963907e-01 2.03821656e-01 4.22505308e-01 0.00000000e+00]
+ [1.13846154e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  1.32307692e-01 7.53846154e-01 0.00000000e+00 0.00000000e+00]]
+[2022-11-29 17:06:52,438] INFO: Epoch #0: Current validation metric: 0.58533 (best: 0.58533)
+[2022-11-29 17:06:52,438] INFO: --------------------------------------------------
+[2022-11-29 17:06:52,438] INFO: Epoch #1 training
+0it [00:00, ?it/s]=== Restarting DataIter train_worker0, seed=3129787893 ===
+[2022-11-29 17:06:52,459] INFO: Restarted DataIter train_worker0, load_range=(0.0, 0.8), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+117it [16:03,  8.23s/it, lr=5.00e-03, Loss=1.06778, AvgLoss=1.08908, Acc=0.58203, AvgAcc=0.59679]
+[2022-11-29 17:22:55,899] INFO: Processed 59904 entries in total (avg. speed 62.2 entries/s)
+[2022-11-29 17:22:55,899] INFO: Train AvgLoss: 1.08908, AvgAcc: 0.59679
+[2022-11-29 17:22:55,899] INFO: Train class distribution: 
+    [(0, 5879), (1, 95), (2, 5423), (3, 464), (4, 14918), (5, 30129), (6, 1797), (7, 1199)]
+[2022-11-29 17:22:56,006] INFO: Epoch #1 validating
+0it [00:00, ?it/s]=== Restarting DataIter val_worker0, seed=4063965649 ===
+[2022-11-29 17:22:56,028] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+4it [00:32,  7.81s/it, Loss=1.16494, AvgLoss=1.06526, Acc=0.57031, AvgAcc=0.60889]
+5it [00:40,  7.78s/it, Loss=1.06715, AvgLoss=1.06564, Acc=0.60742, AvgAcc=0.60859]
+29it [03:50,  7.97s/it, Loss=1.04597, AvgLoss=1.07558, Acc=0.61133, AvgAcc=0.60372]
+[2022-11-29 17:26:47,006] INFO: Processed 14848 entries in total (avg. speed 64.3 entries/s)
+[2022-11-29 17:26:47,006] INFO: Evaluation class distribution: 
+    [(0, 1422), (1, 20), (2, 1371), (3, 115), (4, 3708), (5, 7441), (6, 453), (7, 318)]
+[2022-11-29 17:26:47,195] INFO: Evaluation metrics: 
+    - roc_auc_score: 
+0.7728581724191903
+    - roc_auc_score_matrix: 
+[[0.         0.4583333  0.8071156  0.71611935 0.91733325 0.922861
+  0.9735937  0.8881613 ]
+ [0.         0.         0.8731947  0.81043476 0.98036677 0.9647157
+  0.98763794 0.9371069 ]
+ [0.         0.         0.         0.55956614 0.7091656  0.7565898
+  0.95107096 0.7919574 ]
+ [0.         0.         0.         0.         0.807509   0.769096
+  0.96809673 0.8772764 ]
+ [0.         0.         0.         0.         0.         0.73729384
+  0.943368   0.8094363 ]
+ [0.         0.         0.         0.         0.         0.
+  0.9559181  0.8127572 ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.8988504 ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.        ]]
+    - confusion_matrix: 
+[[6.80731364e-01 0.00000000e+00 2.74261603e-02 0.00000000e+00
+  6.25879044e-02 2.26441632e-01 2.10970464e-03 7.03234880e-04]
+ [9.00000000e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  0.00000000e+00 1.00000000e-01 0.00000000e+00 0.00000000e+00]
+ [2.26841721e-01 0.00000000e+00 5.17870168e-02 0.00000000e+00
+  2.00583516e-01 5.13493800e-01 7.29394602e-03 0.00000000e+00]
+ [3.30434783e-01 0.00000000e+00 3.47826087e-02 0.00000000e+00
+  1.39130435e-01 4.95652174e-01 0.00000000e+00 0.00000000e+00]
+ [3.93743258e-02 0.00000000e+00 1.64509169e-02 0.00000000e+00
+  4.19363538e-01 5.18608414e-01 6.20280475e-03 0.00000000e+00]
+ [3.33288536e-02 0.00000000e+00 2.82220132e-03 0.00000000e+00
+  1.36540788e-01 8.16288133e-01 1.10200242e-02 0.00000000e+00]
+ [2.42825607e-02 0.00000000e+00 1.32450331e-02 0.00000000e+00
+  1.69977925e-01 1.67770419e-01 6.24724062e-01 0.00000000e+00]
+ [1.76100629e-01 0.00000000e+00 1.25786164e-02 0.00000000e+00
+  1.54088050e-01 6.06918239e-01 9.43396226e-03 4.08805031e-02]]
+[2022-11-29 17:26:47,245] INFO: Epoch #1: Current validation metric: 0.60372 (best: 0.60372)
+[2022-11-29 17:26:47,245] INFO: --------------------------------------------------
+[2022-11-29 17:26:47,245] INFO: Epoch #2 training
+0it [00:00, ?it/s]=== Restarting DataIter train_worker0, seed=4095936783 ===
+[2022-11-29 17:26:47,270] INFO: Restarted DataIter train_worker0, load_range=(0.0, 0.8), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+117it [16:07,  8.27s/it, lr=5.00e-05, Loss=1.05962, AvgLoss=1.04963, Acc=0.59961, AvgAcc=0.61493]
+[2022-11-29 17:42:55,243] INFO: Processed 59904 entries in total (avg. speed 61.9 entries/s)
+[2022-11-29 17:42:55,243] INFO: Train AvgLoss: 1.04963, AvgAcc: 0.61493
+[2022-11-29 17:42:55,243] INFO: Train class distribution: 
+    [(0, 5823), (1, 92), (2, 5462), (3, 490), (4, 14883), (5, 30141), (6, 1848), (7, 1165)]
+[2022-11-29 17:42:55,352] INFO: Epoch #2 validating
+0it [00:00, ?it/s]=== Restarting DataIter val_worker0, seed=3786368168 ===
+[2022-11-29 17:42:55,375] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
+{
+  "_": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+29it [03:54,  8.08s/it, Loss=1.05707, AvgLoss=1.06921, Acc=0.61133, AvgAcc=0.60857]
+[2022-11-29 17:46:49,633] INFO: Processed 14848 entries in total (avg. speed 63.4 entries/s)
+[2022-11-29 17:46:49,633] INFO: Evaluation class distribution: 
+    [(0, 1462), (1, 18), (2, 1340), (3, 139), (4, 3803), (5, 7322), (6, 451), (7, 313)]
+[2022-11-29 17:46:49,822] INFO: Evaluation metrics: 
+    - roc_auc_score: 
+0.768079850289281
+    - roc_auc_score_matrix: 
+[[0.         0.49616203 0.7954514  0.7499483  0.9093233  0.909394
+  0.96526337 0.8980454 ]
+ [0.         0.         0.9161691  0.8697042  0.9818564  0.95614433
+  0.9902685  0.94710684]
+ [0.         0.         0.         0.57315576 0.7139899  0.7525693
+  0.94369227 0.79058933]
+ [0.         0.         0.         0.         0.8061394  0.7496428
+  0.9588923  0.8544142 ]
+ [0.         0.         0.         0.         0.         0.74596417
+  0.9421433  0.80567384]
+ [0.         0.         0.         0.         0.         0.
+  0.95730114 0.8224485 ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.8816262 ]
+ [0.         0.         0.         0.         0.         0.
+  0.         0.        ]]
+    - confusion_matrix: 
+[[5.67715458e-01 0.00000000e+00 2.25718194e-02 0.00000000e+00
+  5.33515732e-02 3.52941176e-01 2.73597811e-03 6.83994528e-04]
+ [7.77777778e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  0.00000000e+00 2.22222222e-01 0.00000000e+00 0.00000000e+00]
+ [1.49253731e-01 0.00000000e+00 4.02985075e-02 0.00000000e+00
+  1.85074627e-01 6.20149254e-01 5.22388060e-03 0.00000000e+00]
+ [1.94244604e-01 0.00000000e+00 7.19424460e-02 0.00000000e+00
+  7.19424460e-02 6.61870504e-01 0.00000000e+00 0.00000000e+00]
+ [2.05101236e-02 0.00000000e+00 1.02550618e-02 0.00000000e+00
+  3.57875362e-01 6.01893242e-01 9.46621089e-03 0.00000000e+00]
+ [1.13357006e-02 0.00000000e+00 8.19448238e-04 0.00000000e+00
+  8.64517891e-02 8.91559683e-01 9.69680415e-03 1.36574706e-04]
+ [3.32594235e-02 0.00000000e+00 1.10864745e-02 0.00000000e+00
+  1.97339246e-01 1.97339246e-01 5.60975610e-01 0.00000000e+00]
+ [7.34824281e-02 0.00000000e+00 0.00000000e+00 0.00000000e+00
+  1.37380192e-01 7.15654952e-01 4.15335463e-02 3.19488818e-02]]
+[2022-11-29 17:46:49,874] INFO: Epoch #2: Current validation metric: 0.60857 (best: 0.60857)
+[2022-11-29 17:46:49,876] INFO: Found file data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.fee5db13b42708cba1cd7e4fef1d1549.auto.yaml w/ auto-generated preprocessing information, will use that instead!
+[2022-11-29 17:46:50,074] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 17:46:50,074] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 17:46:50,074] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 17:46:50,074] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 17:46:50,074] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 17:46:50,074] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 17:46:50,074] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 17:46:50,075] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 17:46:50,075] INFO: label_names: ('_label_',)
+[2022-11-29 17:46:50,075] INFO: observer_names: ('event_no', 'jet_no', 'jet_pt', 'jet_eta', 'jet_phi', 'jet_hadronFlavour', 'jet_partonFlavour', 'jet_genjet_pt', 'npfcands', 'pfDeepFlavourJetTags_probb', 'pfDeepFlavourJetTags_probbb', 'pfDeepFlavourJetTags_problepb', 'pfDeepFlavourJetTags_probc', 'pfDeepFlavourJetTags_probuds', 'pfDeepFlavourJetTags_probg', 'jet_qgl')
+[2022-11-29 17:46:50,075] INFO: monitor_variables: ()
+[2022-11-29 17:46:50,075] INFO: reweight_method: flat
+[2022-11-29 17:46:50,075] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 17:46:50,075] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 17:46:50,075] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 17:46:50,075] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 17:46:50,076] INFO: reweight_threshold: 25
+[2022-11-29 17:46:50,076] INFO: reweight_discard_under_overflow: True
+[2022-11-29 17:46:50,080] INFO: Loading model models_3_ef/_best_epoch_state.pt for eval
+[2022-11-29 17:46:50,107] INFO: Running on test file group  with 1 files:
+.../m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root
+[2022-11-29 17:46:50,108] INFO: Found file data/AK4/ak4_points_pf_sv_Puppi_eta4p7_ef.fee5db13b42708cba1cd7e4fef1d1549.auto.yaml w/ auto-generated preprocessing information, will use that instead!
+[2022-11-29 17:46:50,304] INFO: preprocess config: {'method': 'manual', 'data_fraction': None, 'params': None}
+[2022-11-29 17:46:50,304] INFO: selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000) & (event_no%7!=0) & ( (jet_hadronFlavour>0) | ((jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)!=4) & (np.abs(jet_partonFlavour)!=5)) ) & ( ~((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)) | ((jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0) & (jet_pt<200)) ) & ( (jet_genjet_pt>0) | ((jet_genjet_pt<=0) & (jet_pt<60)) )
+[2022-11-29 17:46:50,305] INFO: test_time_selection: (jet_tightId==1) & (np.abs(jet_eta)<4.7) & (jet_pt>15) & (jet_pt<1000)
+[2022-11-29 17:46:50,305] INFO: var_funcs:
+ - ('pfcand_mask', 'awkward.JaggedArray.ones_like(pfcand_etarel)')
+ - ('sv_mask', 'awkward.JaggedArray.ones_like(sv_etarel)')
+ - ('edge_features_mask', 'awkward.JaggedArray.ones_like(pca_distance)')
+ - ('label_b', '(jet_genjet_pt>0) & (jet_nBHadrons==1)')
+ - ('label_bb', '(jet_genjet_pt>0) & (jet_nBHadrons>1)')
+ - ('label_c', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons==1)')
+ - ('label_cc', '(jet_genjet_pt>0) & (jet_nBHadrons==0) & (jet_nCHadrons>1)')
+ - ('label_uds', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (np.abs(jet_partonFlavour)>0) & (np.abs(jet_partonFlavour)<4)')
+ - ('label_g', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==21)')
+ - ('label_undef', '(jet_genjet_pt>0) & (jet_hadronFlavour==0) & (jet_partonFlavour==0)')
+ - ('label_pu', '(jet_genjet_pt<=0)')
+ - ('label_catB', '(jet_genjet_pt>0) & (jet_hadronFlavour==5)')
+ - ('label_catC', '(jet_genjet_pt>0) & (jet_hadronFlavour==4)')
+ - ('_label_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).argmax(1)')
+ - ('_labelcheck_', 'np.stack([label_b,label_bb,label_c,label_cc,label_uds,label_g,label_undef,label_pu], axis=1).sum(1)')
+[2022-11-29 17:46:50,305] INFO: input_names: ('pf_points', 'pf_features', 'pf_mask', 'sv_points', 'sv_features', 'sv_mask', 'edge_features', 'edge_features_mask')
+[2022-11-29 17:46:50,305] INFO: input_dicts:
+ - ('pf_points', ['pfcand_etarel', 'pfcand_phirel'])
+ - ('pf_features', ['pfcand_pt_log_nopuppi', 'pfcand_e_log_nopuppi', 'pfcand_etarel', 'pfcand_phirel', 'pfcand_abseta', 'pfcand_charge', 'pfcand_VTX_ass', 'pfcand_lostInnerHits', 'pfcand_normchi2', 'pfcand_quality', 'pfcand_dz', 'pfcand_dzsig', 'pfcand_dxy', 'pfcand_dxysig', 'pfcand_btagEtaRel', 'pfcand_btagPtRatio', 'pfcand_btagPParRatio', 'pfcand_btagSip3dVal', 'pfcand_btagSip3dSig', 'pfcand_btagJetDistVal'])
+ - ('pf_mask', ['pfcand_mask'])
+ - ('sv_points', ['sv_etarel', 'sv_phirel'])
+ - ('sv_features', ['sv_pt_log', 'sv_mass', 'sv_etarel', 'sv_phirel', 'sv_abseta', 'sv_ntracks', 'sv_normchi2', 'sv_dxy', 'sv_dxysig', 'sv_d3d', 'sv_d3dsig'])
+ - ('sv_mask', ['sv_mask'])
+ - ('edge_features', ['track1_index', 'track2_index', 'pca_distance', 'pca_significance', 'pcaSeed_x1', 'pcaSeed_y1', 'pcaSeed_z1', 'pcaSeed_x2', 'pcaSeed_y2', 'pcaSeed_z2', 'pcaSeed_xerr1', 'pcaSeed_yerr1', 'pcaSeed_zerr1', 'pcaSeed_xerr2', 'pcaSeed_yerr2', 'pcaSeed_zerr2', 'dotprod1', 'dotprod2', 'pca_dist1', 'pca_dist2', 'dotprod12_2D', 'dotprod12_2DV', 'dotprod12_3D', 'dotprod12_3DV', 'pca_jetAxis_dist', 'pca_jetAxis_dotprod', 'pca_jetAxis_dEta', 'pca_jetAxis_dPhi_'])
+ - ('edge_features_mask', ['edge_features_mask'])
+[2022-11-29 17:46:50,305] INFO: input_shapes:
+ - ('pf_points', (-1, 2, 50))
+ - ('pf_features', (-1, 20, 50))
+ - ('pf_mask', (-1, 1, 50))
+ - ('sv_points', (-1, 2, 5))
+ - ('sv_features', (-1, 11, 5))
+ - ('sv_mask', (-1, 1, 5))
+ - ('edge_features', (-1, 28, 625))
+ - ('edge_features_mask', (-1, 1, 625))
+[2022-11-29 17:46:50,305] INFO: preprocess_params:
+ - ('pfcand_etarel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_phirel', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_pt_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_e_log_nopuppi', {'length': 50, 'pad_mode': 'constant', 'center': 1.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_abseta', {'length': 50, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_charge', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_VTX_ass', {'length': 50, 'pad_mode': 'constant', 'center': 4, 'scale': 0.3, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_lostInnerHits', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_normchi2', {'length': 50, 'pad_mode': 'constant', 'center': 5, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_quality', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dz', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 150, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dzsig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxy', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 270, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_dxysig', {'length': 50, 'pad_mode': 'constant', 'center': 1.1, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagEtaRel', {'length': 50, 'pad_mode': 'constant', 'center': 2.1, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPtRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagPParRatio', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 90, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagSip3dSig', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_btagJetDistVal', {'length': 50, 'pad_mode': 'constant', 'center': 0, 'scale': 50, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pfcand_mask', {'length': 50, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_etarel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_phirel', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_pt_log', {'length': 5, 'pad_mode': 'constant', 'center': 2.8, 'scale': 0.8, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mass', {'length': 5, 'pad_mode': 'constant', 'center': 1.1, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_abseta', {'length': 5, 'pad_mode': 'constant', 'center': 0.8, 'scale': 1.2, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_ntracks', {'length': 5, 'pad_mode': 'constant', 'center': 3, 'scale': 0.5, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_normchi2', {'length': 5, 'pad_mode': 'constant', 'center': 0.7, 'scale': 0.7, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxy', {'length': 5, 'pad_mode': 'constant', 'center': 0.2, 'scale': 0.6, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_dxysig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3d', {'length': 5, 'pad_mode': 'constant', 'center': 0.35, 'scale': 0.4, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_d3dsig', {'length': 5, 'pad_mode': 'constant', 'center': 5, 'scale': 0.03, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('sv_mask', {'length': 5, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track1_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('track2_index', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_distance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_significance', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_x2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_y2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_z2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_xerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_yerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pcaSeed_zerr2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist1', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_dist2', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_2DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3D', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('dotprod12_3DV', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dist', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dotprod', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dEta', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('pca_jetAxis_dPhi_', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+ - ('edge_features_mask', {'length': 625, 'pad_mode': 'constant', 'center': None, 'scale': 1, 'min': -5, 'max': 5, 'pad_value': 0})
+[2022-11-29 17:46:50,306] INFO: label_names: ('_label_',)
+[2022-11-29 17:46:50,306] INFO: observer_names: ('event_no', 'jet_no', 'jet_pt', 'jet_eta', 'jet_phi', 'jet_hadronFlavour', 'jet_partonFlavour', 'jet_genjet_pt', 'npfcands', 'pfDeepFlavourJetTags_probb', 'pfDeepFlavourJetTags_probbb', 'pfDeepFlavourJetTags_problepb', 'pfDeepFlavourJetTags_probc', 'pfDeepFlavourJetTags_probuds', 'pfDeepFlavourJetTags_probg', 'jet_qgl')
+[2022-11-29 17:46:50,306] INFO: monitor_variables: ()
+[2022-11-29 17:46:50,306] INFO: reweight_method: flat
+[2022-11-29 17:46:50,306] INFO: reweight_branches: ('jet_pt', 'jet_eta')
+[2022-11-29 17:46:50,306] INFO: reweight_bins: ([15, 20, 26, 35, 46, 61, 80, 106, 141, 186, 247, 326, 432, 571, 756, 1000], [-4.7, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.7])
+[2022-11-29 17:46:50,306] INFO: reweight_classes: ('label_catB', 'label_catC', 'label_uds', 'label_g', 'label_undef', 'label_pu')
+[2022-11-29 17:46:50,306] INFO: class_weights: [1, 1, 2.5, 5, 0.3, 0.2]
+[2022-11-29 17:46:50,306] INFO: reweight_threshold: 25
+[2022-11-29 17:46:50,306] INFO: reweight_discard_under_overflow: True
+0it [00:00, ?it/s]=== Restarting DataIter test__worker0, seed=2928997111 ===
+[2022-11-29 17:46:50,331] INFO: Restarted DataIter test__worker0, load_range=(0, 1), file_list:
+{
+  "": [
+    "/m100_work/INF22_lhc_0/mmalucch/output3_distcut_pt.root"
+  ]
+}
+0it [00:20, ?it/s]
+Traceback (most recent call last):
+  File "train.py", line 889, in <module>
+    main(args)
+  File "train.py", line 821, in main
+    test_metric, scores, labels, observers = evaluate(
+  File "/m100/home/userexternal/mmalucch/weaver/utils/nn/tools.py", line 139, in evaluate_classification
+    for X, y, Z in tq:
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/tqdm/std.py", line 1195, in __iter__
+    for obj in iterable:
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 521, in __next__
+    data = self._next_data()
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1203, in _next_data
+    return self._process_data(data)
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 1229, in _process_data
+    data.reraise()
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/_utils.py", line 434, in reraise
+    raise exception
+RuntimeError: Caught RuntimeError in DataLoader worker process 0.
+Original Traceback (most recent call last):
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 218, in __next__
+    i = self.indices[self.cursor]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/utils/data/_utils/worker.py", line 287, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 32, in fetch
+    data.append(next(self.dataset_iter))
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 236, in __next__
+    self.table, self.indices = self.prefetch.result()
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/concurrent/futures/_base.py", line 444, in result
+    return self.__get_result()
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+  File "/cineca/prod/opt/libraries/cineca-ai/2.2.0/none/cineca-ai-conda-env-py3.8-cuda-openmpi-11.0/lib/python3.8/concurrent/futures/thread.py", line 57, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 132, in _load_next
+    indices = _preprocess(table, data_config, options)
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 110, in _preprocess
+    _check_labels(table)
+  File "/m100/home/userexternal/mmalucch/weaver/utils/dataset.py", line 96, in _check_labels
+    raise RuntimeError('Inconsistent label definition: some of the entries are not assigned to any classes!')
+RuntimeError: Inconsistent label definition: some of the entries are not assigned to any classes!
+

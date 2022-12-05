@@ -970,7 +970,7 @@
 }
 [2022-12-01 12:46:30,627] INFO: Processed 59904 entries in total (avg. speed 1202.6 entries/s)
 [2022-12-01 12:46:30,627] INFO: Train AvgLoss: 1.36696, AvgAcc: 0.51813
-[2022-12-01 12:46:30,627] INFO: Train class distribution: 
+[2022-12-01 12:46:30,627] INFO: Train class distribution:
     [(0, 5896), (1, 88), (2, 5472), (3, 495), (4, 15074), (5, 29838), (6, 1866), (7, 1175)]
 [2022-12-01 12:46:30,733] INFO: Epoch #0 validating
 [2022-12-01 12:46:30,756] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -980,16 +980,16 @@
   ]
 }
 [2022-12-01 12:46:40,474] INFO: Processed 14336 entries in total (avg. speed 1471.8 entries/s)
-[2022-12-01 12:46:40,474] INFO: Evaluation class distribution: 
+[2022-12-01 12:46:40,474] INFO: Evaluation class distribution:
     [(0, 1460), (1, 18), (2, 1353), (3, 130), (4, 3608), (5, 7043), (6, 434), (7, 290)]
 [2022-12-01 12:46:40,477] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:46:40,506] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:46:40,510] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:46:40,510] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[0.25479452 0.         0.         0.         0.22534247 0.51643836
   0.00342466 0.        ]
  [0.16666667 0.         0.         0.         0.11111111 0.72222222
@@ -1017,7 +1017,7 @@ None
 }
 [2022-12-01 12:47:19,047] INFO: Processed 59392 entries in total (avg. speed 1543.2 entries/s)
 [2022-12-01 12:47:19,047] INFO: Train AvgLoss: 1.08921, AvgAcc: 0.60138
-[2022-12-01 12:47:19,048] INFO: Train class distribution: 
+[2022-12-01 12:47:19,048] INFO: Train class distribution:
     [(0, 5876), (1, 91), (2, 5513), (3, 494), (4, 14787), (5, 29605), (6, 1801), (7, 1225)]
 [2022-12-01 12:47:19,134] INFO: Epoch #1 validating
 [2022-12-01 12:47:19,154] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1027,16 +1027,16 @@ None
   ]
 }
 [2022-12-01 12:47:28,502] INFO: Processed 14848 entries in total (avg. speed 1585.0 entries/s)
-[2022-12-01 12:47:28,503] INFO: Evaluation class distribution: 
+[2022-12-01 12:47:28,503] INFO: Evaluation class distribution:
     [(0, 1450), (1, 19), (2, 1382), (3, 136), (4, 3694), (5, 7419), (6, 417), (7, 331)]
 [2022-12-01 12:47:28,505] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:47:28,534] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:47:28,538] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:47:28,538] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[0.56413793 0.         0.10965517 0.         0.12896552 0.19586207
   0.00137931 0.        ]
  [0.68421053 0.         0.10526316 0.         0.         0.21052632
@@ -1064,7 +1064,7 @@ None
 }
 [2022-12-01 12:48:06,253] INFO: Processed 59904 entries in total (avg. speed 1589.3 entries/s)
 [2022-12-01 12:48:06,253] INFO: Train AvgLoss: 1.05697, AvgAcc: 0.60811
-[2022-12-01 12:48:06,253] INFO: Train class distribution: 
+[2022-12-01 12:48:06,253] INFO: Train class distribution:
     [(0, 5915), (1, 95), (2, 5595), (3, 495), (4, 15050), (5, 29753), (6, 1824), (7, 1177)]
 [2022-12-01 12:48:06,385] INFO: Epoch #2 validating
 [2022-12-01 12:48:06,404] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1074,16 +1074,16 @@ None
   ]
 }
 [2022-12-01 12:48:15,869] INFO: Processed 14848 entries in total (avg. speed 1565.7 entries/s)
-[2022-12-01 12:48:15,869] INFO: Evaluation class distribution: 
+[2022-12-01 12:48:15,869] INFO: Evaluation class distribution:
     [(0, 1420), (1, 20), (2, 1405), (3, 118), (4, 3715), (5, 7451), (6, 405), (7, 314)]
 [2022-12-01 12:48:15,872] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:48:15,900] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:48:15,904] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:48:15,904] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[6.18309859e-01 0.00000000e+00 4.85915493e-02 0.00000000e+00
   6.69014085e-02 2.64084507e-01 2.11267606e-03 0.00000000e+00]
  [8.50000000e-01 0.00000000e+00 5.00000000e-02 0.00000000e+00
@@ -1111,7 +1111,7 @@ None
 }
 [2022-12-01 12:48:53,534] INFO: Processed 59392 entries in total (avg. speed 1579.3 entries/s)
 [2022-12-01 12:48:53,534] INFO: Train AvgLoss: 1.03296, AvgAcc: 0.61673
-[2022-12-01 12:48:53,534] INFO: Train class distribution: 
+[2022-12-01 12:48:53,534] INFO: Train class distribution:
     [(0, 5739), (1, 77), (2, 5420), (3, 492), (4, 14859), (5, 29852), (6, 1796), (7, 1157)]
 [2022-12-01 12:48:53,585] INFO: Epoch #3 validating
 [2022-12-01 12:48:53,605] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1121,16 +1121,16 @@ None
   ]
 }
 [2022-12-01 12:49:02,881] INFO: Processed 14336 entries in total (avg. speed 1542.3 entries/s)
-[2022-12-01 12:49:02,882] INFO: Evaluation class distribution: 
+[2022-12-01 12:49:02,882] INFO: Evaluation class distribution:
     [(0, 1428), (1, 12), (2, 1380), (3, 123), (4, 3577), (5, 7073), (6, 400), (7, 343)]
 [2022-12-01 12:49:02,884] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:49:02,912] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:49:02,916] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:49:02,916] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[5.84733894e-01 0.00000000e+00 4.27170868e-02 0.00000000e+00
   1.58963585e-01 2.09383754e-01 3.50140056e-03 7.00280112e-04]
  [7.50000000e-01 0.00000000e+00 8.33333333e-02 0.00000000e+00
@@ -1158,7 +1158,7 @@ None
 }
 [2022-12-01 12:49:40,345] INFO: Processed 59904 entries in total (avg. speed 1600.5 entries/s)
 [2022-12-01 12:49:40,345] INFO: Train AvgLoss: 1.02380, AvgAcc: 0.62196
-[2022-12-01 12:49:40,345] INFO: Train class distribution: 
+[2022-12-01 12:49:40,345] INFO: Train class distribution:
     [(0, 5962), (1, 91), (2, 5544), (3, 487), (4, 14922), (5, 29893), (6, 1818), (7, 1187)]
 [2022-12-01 12:49:40,403] INFO: Epoch #4 validating
 [2022-12-01 12:49:40,423] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1168,16 +1168,16 @@ None
   ]
 }
 [2022-12-01 12:49:49,747] INFO: Processed 14848 entries in total (avg. speed 1589.2 entries/s)
-[2022-12-01 12:49:49,747] INFO: Evaluation class distribution: 
+[2022-12-01 12:49:49,747] INFO: Evaluation class distribution:
     [(0, 1539), (1, 17), (2, 1323), (3, 130), (4, 3682), (5, 7369), (6, 458), (7, 330)]
 [2022-12-01 12:49:49,749] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:49:49,778] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:49:49,782] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:49:49,782] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[5.54256010e-01 0.00000000e+00 6.17283951e-02 0.00000000e+00
   7.21247563e-02 3.04093567e-01 7.14749838e-03 6.49772580e-04]
  [8.23529412e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
@@ -1205,7 +1205,7 @@ None
 }
 [2022-12-01 12:50:27,591] INFO: Processed 59392 entries in total (avg. speed 1571.8 entries/s)
 [2022-12-01 12:50:27,591] INFO: Train AvgLoss: 1.01776, AvgAcc: 0.62574
-[2022-12-01 12:50:27,592] INFO: Train class distribution: 
+[2022-12-01 12:50:27,592] INFO: Train class distribution:
     [(0, 5830), (1, 114), (2, 5310), (3, 483), (4, 14964), (5, 29670), (6, 1837), (7, 1184)]
 [2022-12-01 12:50:27,651] INFO: Epoch #5 validating
 [2022-12-01 12:50:27,673] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1215,16 +1215,16 @@ None
   ]
 }
 [2022-12-01 12:50:36,984] INFO: Processed 14336 entries in total (avg. speed 1536.2 entries/s)
-[2022-12-01 12:50:36,984] INFO: Evaluation class distribution: 
+[2022-12-01 12:50:36,984] INFO: Evaluation class distribution:
     [(0, 1416), (1, 15), (2, 1324), (3, 119), (4, 3571), (5, 7142), (6, 449), (7, 300)]
 [2022-12-01 12:50:36,986] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:50:37,013] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:50:37,017] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:50:37,017] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[6.52542373e-01 0.00000000e+00 3.46045198e-02 0.00000000e+00
   4.66101695e-02 2.59887006e-01 5.64971751e-03 7.06214689e-04]
  [1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00
@@ -1252,7 +1252,7 @@ None
 }
 [2022-12-01 12:51:14,194] INFO: Processed 59904 entries in total (avg. speed 1611.4 entries/s)
 [2022-12-01 12:51:14,194] INFO: Train AvgLoss: 1.01663, AvgAcc: 0.62477
-[2022-12-01 12:51:14,194] INFO: Train class distribution: 
+[2022-12-01 12:51:14,194] INFO: Train class distribution:
     [(0, 5784), (1, 99), (2, 5388), (3, 531), (4, 15050), (5, 30057), (6, 1822), (7, 1173)]
 [2022-12-01 12:51:14,246] INFO: Epoch #6 validating
 [2022-12-01 12:51:14,266] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1262,16 +1262,16 @@ None
   ]
 }
 [2022-12-01 12:51:23,574] INFO: Processed 14848 entries in total (avg. speed 1591.7 entries/s)
-[2022-12-01 12:51:23,575] INFO: Evaluation class distribution: 
+[2022-12-01 12:51:23,575] INFO: Evaluation class distribution:
     [(0, 1569), (1, 12), (2, 1360), (3, 135), (4, 3631), (5, 7398), (6, 432), (7, 311)]
 [2022-12-01 12:51:23,577] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:51:23,605] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:51:23,609] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:51:23,609] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[5.95283620e-01 0.00000000e+00 2.61312938e-02 0.00000000e+00
   9.62396431e-02 2.78521351e-01 1.27469726e-03 2.54939452e-03]
  [7.50000000e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
@@ -1299,7 +1299,7 @@ None
 }
 [2022-12-01 12:52:01,299] INFO: Processed 59392 entries in total (avg. speed 1576.8 entries/s)
 [2022-12-01 12:52:01,299] INFO: Train AvgLoss: 0.99101, AvgAcc: 0.63298
-[2022-12-01 12:52:01,299] INFO: Train class distribution: 
+[2022-12-01 12:52:01,299] INFO: Train class distribution:
     [(0, 5831), (1, 112), (2, 5419), (3, 503), (4, 14988), (5, 29488), (6, 1839), (7, 1212)]
 [2022-12-01 12:52:01,362] INFO: Epoch #7 validating
 [2022-12-01 12:52:01,381] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1309,16 +1309,16 @@ None
   ]
 }
 [2022-12-01 12:52:10,680] INFO: Processed 14848 entries in total (avg. speed 1593.5 entries/s)
-[2022-12-01 12:52:10,680] INFO: Evaluation class distribution: 
+[2022-12-01 12:52:10,680] INFO: Evaluation class distribution:
     [(0, 1510), (1, 15), (2, 1354), (3, 120), (4, 3691), (5, 7401), (6, 445), (7, 312)]
 [2022-12-01 12:52:10,683] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:52:10,711] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:52:10,715] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:52:10,715] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[6.31125828e-01 0.00000000e+00 4.70198675e-02 0.00000000e+00
   6.35761589e-02 2.50993377e-01 4.63576159e-03 2.64900662e-03]
  [8.66666667e-01 0.00000000e+00 0.00000000e+00 0.00000000e+00
@@ -1346,7 +1346,7 @@ None
 }
 [2022-12-01 12:52:49,928] INFO: Processed 59904 entries in total (avg. speed 1528.5 entries/s)
 [2022-12-01 12:52:49,928] INFO: Train AvgLoss: 0.96987, AvgAcc: 0.64233
-[2022-12-01 12:52:49,928] INFO: Train class distribution: 
+[2022-12-01 12:52:49,928] INFO: Train class distribution:
     [(0, 5895), (1, 94), (2, 5492), (3, 477), (4, 14999), (5, 30008), (6, 1777), (7, 1162)]
 [2022-12-01 12:52:49,989] INFO: Epoch #8 validating
 [2022-12-01 12:52:50,009] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1356,16 +1356,16 @@ None
   ]
 }
 [2022-12-01 12:52:59,306] INFO: Processed 14848 entries in total (avg. speed 1593.7 entries/s)
-[2022-12-01 12:52:59,306] INFO: Evaluation class distribution: 
+[2022-12-01 12:52:59,306] INFO: Evaluation class distribution:
     [(0, 1423), (1, 12), (2, 1371), (3, 114), (4, 3768), (5, 7383), (6, 441), (7, 336)]
 [2022-12-01 12:52:59,308] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:52:59,336] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:52:59,340] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:52:59,340] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[6.28952916e-01 0.00000000e+00 4.63808855e-02 0.00000000e+00
   5.41110330e-02 2.61419536e-01 3.51370344e-03 5.62192551e-03]
  [1.00000000e+00 0.00000000e+00 0.00000000e+00 0.00000000e+00
@@ -1393,7 +1393,7 @@ None
 }
 [2022-12-01 12:53:39,155] INFO: Processed 59392 entries in total (avg. speed 1492.6 entries/s)
 [2022-12-01 12:53:39,155] INFO: Train AvgLoss: 0.97016, AvgAcc: 0.64251
-[2022-12-01 12:53:39,155] INFO: Train class distribution: 
+[2022-12-01 12:53:39,155] INFO: Train class distribution:
     [(0, 5942), (1, 94), (2, 5467), (3, 483), (4, 14701), (5, 29774), (6, 1758), (7, 1173)]
 [2022-12-01 12:53:39,212] INFO: Epoch #9 validating
 [2022-12-01 12:53:39,232] INFO: Restarted DataIter val_worker0, load_range=(0.8, 1.0), file_list:
@@ -1403,16 +1403,16 @@ None
   ]
 }
 [2022-12-01 12:53:48,728] INFO: Processed 14848 entries in total (avg. speed 1560.5 entries/s)
-[2022-12-01 12:53:48,728] INFO: Evaluation class distribution: 
+[2022-12-01 12:53:48,728] INFO: Evaluation class distribution:
     [(0, 1358), (1, 17), (2, 1332), (3, 136), (4, 3762), (5, 7472), (6, 421), (7, 350)]
 [2022-12-01 12:53:48,730] ERROR: Number of classes in y_true not equal to the number of columns in 'y_score'
 [2022-12-01 12:53:48,758] ERROR: Only one class present in y_true. ROC AUC score is not defined in that case.
-[2022-12-01 12:53:48,762] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:53:48,762] INFO: Evaluation metrics:
+    - roc_auc_score:
 None
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 None
-    - confusion_matrix: 
+    - confusion_matrix:
 [[0.60751105 0.         0.04418262 0.         0.05596465 0.28865979
   0.00220913 0.00147275]
  [0.82352941 0.         0.         0.         0.         0.17647059
@@ -1598,12 +1598,12 @@ None
   ]
 }
 [2022-12-01 12:54:30,564] INFO: Processed 254737 entries in total (avg. speed 6153.8 entries/s)
-[2022-12-01 12:54:30,564] INFO: Evaluation class distribution: 
+[2022-12-01 12:54:30,564] INFO: Evaluation class distribution:
     [(0, 68763), (1, 1025), (2, 27787), (3, 1810), (4, 87052), (5, 43606), (6, 17010), (7, 2614), (8, 5070)]
-[2022-12-01 12:54:33,367] INFO: Evaluation metrics: 
-    - roc_auc_score: 
+[2022-12-01 12:54:33,367] INFO: Evaluation metrics:
+    - roc_auc_score:
 0.7982501345311874
-    - roc_auc_score_matrix: 
+    - roc_auc_score_matrix:
 [[0.         0.76026064 0.8603561  0.82566404 0.95590806 0.94962656
   0.99236727 0.94681793 0.83740413]
  [0.         0.         0.947234   0.8882711  0.9839184  0.9754284
@@ -1622,7 +1622,7 @@ None
   0.         0.         0.3466562 ]
  [0.         0.         0.         0.         0.         0.
   0.         0.         0.        ]]
-    - confusion_matrix: 
+    - confusion_matrix:
 [[0.71845324 0.         0.06695461 0.         0.03414627 0.17374169
   0.00347571 0.00322848 0.        ]
  [0.85073171 0.         0.01170732 0.         0.00878049 0.12585366
