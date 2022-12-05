@@ -4,9 +4,9 @@ import torch.nn as nn
 
 import sys
 
-orig_stdout = sys.stdout
-f = open('out_new.txt', 'w')
-sys.stdout = f
+#orig_stdout = sys.stdout
+#f = open('out_new.txt', 'w')
+#sys.stdout = f
 
 torch.set_printoptions(profile="full")
 #np.set_printoptions(threshold=sys.maxsize)
@@ -126,9 +126,9 @@ def edges_or(idx_tensor, el, bs, np, k_ef, efs):
 
 
 def edges_or_new_dummy(idx_tensor, el, bs, np, k_ef, efs):
-    print("edgeList get_edges\n", el.size() , "\n", el)
+    #print("edgeList get_edges\n", el.size() , "\n", el)
 
-    print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
+    #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
     #print("efs \n", efs.size() , "\n", efs)
 
     efs = efs.transpose(2, 1) #(batch_size, lenght_edgefeatures, num_ef)
@@ -158,14 +158,14 @@ def edges_or_new_dummy(idx_tensor, el, bs, np, k_ef, efs):
                 idx_tensor_final[batch, pf_idx] = idx_tensor[batch, pf_idx]
 
     #print("efs_tensor \n", efs_tensor.size() , "\n", efs_tensor)
-    print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
+    #print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
     return idx_tensor_final, efs_tensor
 
 
 def edges_or_new(idx_tensor, el, bs, np, k_ef, efs):
-    print("edgeList get_edges\n", el.size() , "\n", el)
+    #print("edgeList get_edges\n", el.size() , "\n", el)
 
-    print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
+    #print("idx_tensor get_edges\n", idx_tensor.size() , "\n", idx_tensor)
     #print("efs \n", efs.size() , "\n", efs)
 
     efs = efs.transpose(2, 1) #(batch_size, lenght_edgefeatures, num_ef)
@@ -195,7 +195,7 @@ def edges_or_new(idx_tensor, el, bs, np, k_ef, efs):
                 idx_tensor_final[batch, pf_idx] = idx_tensor[batch, pf_idx]
 
     #print("efs_tensor \n", efs_tensor.size() , "\n", efs_tensor)
-    print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
+    #print("idx_tensor_final get_edges\n", idx_tensor_final.size() , "\n", idx_tensor_final)
     return idx_tensor_final, efs_tensor
 
 
