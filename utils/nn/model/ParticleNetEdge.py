@@ -4,9 +4,9 @@ import torch.nn as nn
 
 import sys
 
-#orig_stdout = sys.stdout
-#f = open('out_new.txt', 'w')
-#sys.stdout = f
+orig_stdout = sys.stdout
+f = open('out_new.txt', 'w')
+sys.stdout = f
 
 torch.set_printoptions(profile="full")
 #np.set_printoptions(threshold=sys.maxsize)
@@ -19,6 +19,32 @@ EDGE_FEATURES_OR_CONNECTION=True
 EDGE_FEATURES_OR_CONNECTION_DUMMY=False
 
 '''Based on https://github.com/WangYueFt/dgcnn/blob/master/pytorch/model.py.'''
+
+
+def build_sparse_tensor(uu, idx, seq_len):
+    # inputs: uu (N, C, num_pairs), idx (N, 2, num_pairs)
+    # return: (N, C, seq_len, seq_len) (seq_len is the number of pf+sv)
+    batch_size, num_fts, num_pairs = uu.size()
+
+    print("edgeList build_sparse_tensor\n", idx.size() , "\n", idx)
+    print("edgefts build_sparse_tensor\n", uu.size() , "\n", uu)
+
+    idx = torch.min(idx, torch.ones_like(idx) * seq_len)
+    i = torch.cat((
+        torch.arange(0, batch_size, device=uu.device).repeat_interleave(num_fts * num_pairs).unsqueeze(0),
+        torch.arange(0, num_fts, device=uu.device).repeat_interleave(num_pairs).repeat(batch_size).unsqueeze(0),
+        idx[:, :1, :].expand_as(uu).flatten().unsqueeze(0),
+        idx[:, 1:, :].expand_as(uu).flatten().unsqueeze(0),
+    ), dim=0)
+
+    ef_sparse_tensor = torch.sparse_coo_tensor(
+        i, uu.flatten(),
+        size=(batch_size, num_fts, seq_len + 1, seq_len + 1),
+        device=uu.device).to_dense()[:, :, :seq_len, :seq_len]
+
+    print("ef_sparse_tensor build_sparse_tensor\n", ef_sparse_tensor.size() , "\n", ef_sparse_tensor)
+
+    return ef_sparse_tensor
 
 
 def knn(x, k):
@@ -507,6 +533,7 @@ class EdgeFeatureConvBlock(nn.Module):
         #print("points block \n ",points.size(),  "\n" ) # size (batch_size, 2, num_points)
 
         batch_size, num_dims, num_points = features.size()
+        ef_sparse_tensor=build_sparse_tensor(edge_features, edge_list, num_points)
 
         if NEW_EDGES:
             topk_indices = get_edges(edge_list, batch_size, num_points, self.k_ef) #(batch_size, 2, dim_edgefeatures)
